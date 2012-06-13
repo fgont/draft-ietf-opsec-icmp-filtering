@@ -1,0 +1,3271 @@
+<?xml version="1.0" encoding="US-ASCII"?>
+<!DOCTYPE rfc SYSTEM "rfc2629.dtd">
+<?xml-stylesheet type='text/xsl' href='rfc2629.xslt' ?>
+<!-- try to enforce the ID-nits conventions and DTD validity -->
+<?rfc strict="no" ?>
+<!-- items used when reviewing the document -->
+<?rfc comments="no" ?>
+<!-- controls display of <cref> elements -->
+<?rfc inline="no" ?>
+<!-- when no, put comments at end in comments section,
+                                otherwise, put inline -->
+<?rfc editing="no" ?>
+<!-- when yes, insert editing marks -->
+<!-- create table of contents (set it options).
+           Note the table of contents may be omitted
+         for very short documents -->
+<?rfc toc="yes"?>
+<?rfc tocompact="yes"?>
+<?rfc tocdepth="3"?>
+<!-- choose the options for the references. Some like
+         symbolic tags in the references (and citations)
+         and others prefer numbers. -->
+<?rfc symrefs="yes"?>
+<?rfc sortrefs="yes" ?>
+<!-- these two save paper: start new paragraphs from the same page etc. -->
+<?rfc compact="yes" ?>
+<?rfc subcompact="no" ?>
+<!-- end of list of processing instructions -->
+<!-- Information about the document.
+         categories values: std, bcp, info, exp, and historic
+         For Internet-Drafts, specify attribute "ipr".
+         (ipr values are: full3667, noModification3667, noDerivatives3667),
+         Also for Internet-Drafts, can specify values for
+         attributes "iprExtract", and "docName".  Note
+         that the value for iprExtract is the anchor attribute
+         value of a section that can be extracted, and is only
+         useful when the value of "ipr" is not "full3667". -->
+<!-- TODO: verify which attributes are specified only
+            by the RFC editor.  It appears that attributes
+            "number", "obsoletes", "updates", and "seriesNo"
+            are specified by the RFC editor (and not by
+            the document author). -->
+<rfc category="info" docName="draft-ietf-opsec-icmp-filtering-04"
+     ipr="pre5378Trust200902">
+  <front>
+    <title abbrev="ICMP Filtering">Recommendations for filtering ICMP
+    messages</title>
+
+    <!-- add 'role="editor"' below for the editors if appropriate -->
+
+    <author fullname="Fernando Gont" initials="F.G." surname="Gont">
+      <!-- abbrev not needed but can be used for the header
+         if the full organization name is too long -->
+
+      <organization abbrev="UTN/FRH">Universidad Tecnologica Nacional /
+      Facultad Regional Haedo</organization>
+
+      <address>
+        <postal>
+          <!-- I've omitted my street address here -->
+
+          <street>Pueyrredon 76, 3A</street>
+
+          <code>1704</code>
+
+          <city>Ramos Mejia</city>
+
+          <region>Provincia de Buenos Aires</region>
+
+          <country>Argentina</country>
+        </postal>
+
+        <phone>+54 11 4650 8472</phone>
+
+        <email>fernando@gont.com.ar</email>
+
+        <uri>http://www.gont.com.ar</uri>
+
+        <!--            If I had a phone, fax machine, and a URI, I could add the following: -->
+      </address>
+    </author>
+
+    <author fullname="Guillermo Gont" initials="G.G." surname="Gont">
+      <!-- abbrev not needed but can be used for the header
+         if the full organization name is too long -->
+
+      <organization abbrev="SI6 Networks">SI6 Networks</organization>
+
+      <address>
+        <postal>
+          <!-- I've omitted my street address here -->
+
+          <street>Evaristo Carriego 2644</street>
+
+          <code>1706</code>
+
+          <city>Haedo</city>
+
+          <region>Provincia de Buenos Aires</region>
+
+          <country>Argentina</country>
+        </postal>
+
+        <phone>+54 11 4650 8472</phone>
+
+        <email>ggont@si6networks.com</email>
+
+        <uri>http://www.si6networks.com</uri>
+      </address>
+    </author>
+
+    <author fullname="Carlos Pignataro" initials="C.M." surname="Pignataro">
+      <organization abbrev="Cisco">Cisco Systems, Inc.</organization>
+
+      <address>
+        <postal>
+          <street>7200-12 Kit Creek Road</street>
+
+          <street/>
+
+          <city>Research Triangle Park</city>
+
+          <code>27709</code>
+
+          <region>NC</region>
+
+          <country>US</country>
+        </postal>
+
+        <!--
+        <phone>+1-919-392-7428</phone>
+        <facsimile>+1-919-869-1438</facsimile>
+-->
+
+        <email>cpignata@cisco.com</email>
+      </address>
+    </author>
+
+    <date/>
+
+    <!-- month="May" is no longer necessary note also, day="30" is optional -->
+
+    <area>Internet</area>
+
+    <!-- WG name at the upperleft corner of the doc,
+         IETF fine for individual submissions -->
+
+    <workgroup>Operational Security Capabilities for IP Network Infrastructure
+    (opsec)</workgroup>
+
+    <abstract>
+      <t>This document document provides advice on the filtering of ICMPv4 and
+      ICMPv6 messages. Additionaly, it discusses the operational and
+      interoperability implications of such filtering.</t>
+    </abstract>
+  </front>
+
+  <middle>
+    <section anchor="intro" title="Introduction">
+      <t>This document document provides advice on the filtering of ICMPv4 and
+      ICMPv6 messages. Additionaly, it discusses the operational and
+      interoperability implications of such filtering.</t>
+
+      <t>The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+      "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this
+      document are to be interpreted as described in RFC 2119 <xref
+      target="RFC2119"/>.</t>
+    </section>
+
+    <section anchor="ICMPv4"
+             title="Internet Control Message Protocol version 4 (ICMP)">
+      <t><xref target="table-icmpv4"/> summarizes the recommendations with
+      respect to what a device SHOULD do when generating, forwarding, or
+      receiving ICMPv6 messages.</t>
+
+      <texttable anchor="table-icmpv4" style="all"
+                 title="Summary Recommendations for ICMPv4">
+        <ttcol align="center">ICMPv4 Message</ttcol>
+
+        <ttcol align="center">Sourced from Device</ttcol>
+
+        <ttcol align="center">Through Device</ttcol>
+
+        <ttcol align="center">Destined to Device</ttcol>
+
+        <!--    <c>ICMPv4-unreach</c>					<c>N/A</c>	<c>N/A</c>	<c>N/A</c> -->
+
+        <c>ICMPv4-unreach-net</c>
+
+        <c>Rate-L</c>
+
+        <c>Rate-L</c>
+
+        <c>Rate-L</c>
+
+        <c>ICMPv4-unreach-host</c>
+
+        <c>Rate-L</c>
+
+        <c>Rate-L</c>
+
+        <c>Rate-L</c>
+
+        <c>ICMPv4-unreach-proto</c>
+
+        <c>Rate-L</c>
+
+        <c>Deny</c>
+
+        <c>Rate-L</c>
+
+        <c>ICMPv4-unreach-port</c>
+
+        <c>Rate-L</c>
+
+        <c>Deny</c>
+
+        <c>Rate-L</c>
+
+        <c>ICMPv4-unreach-frag-needed</c>
+
+        <c>Send</c>
+
+        <c>Permit</c>
+
+        <c>Rate-L</c>
+
+        <c>ICMPv4-unreach-src-route</c>
+
+        <c>Rate-L</c>
+
+        <c>Deny</c>
+
+        <c>Rate-L</c>
+
+        <c>ICMPv4-unreach-net-unknown (Depr)</c>
+
+        <c>Deny</c>
+
+        <c>Deny</c>
+
+        <c>Deny</c>
+
+        <c>ICMPv4-unreach-host-unknown</c>
+
+        <c>Rate-L</c>
+
+        <c>Deny</c>
+
+        <c>Ignore</c>
+
+        <c>ICMPv4-unreach-host-isolated (Depr)</c>
+
+        <c>Deny</c>
+
+        <c>Deny</c>
+
+        <c>Deny</c>
+
+        <c>ICMPv4-unreach-net-tos</c>
+
+        <c>Rate-L</c>
+
+        <c>Deny</c>
+
+        <c>Rate-L</c>
+
+        <c>ICMPv4-unreach-host-tos</c>
+
+        <c>Rate-L</c>
+
+        <c>Deny</c>
+
+        <c>Rate-L</c>
+
+        <c>ICMPv4-unreach-admin</c>
+
+        <c>Rate-L</c>
+
+        <c>Rate-L</c>
+
+        <c>Rate-L</c>
+
+        <c>ICMPv4-unreach-prec-violation</c>
+
+        <c>Rate-L</c>
+
+        <c>Deny</c>
+
+        <c>Rate-L</c>
+
+        <c>ICMPv4-unreach-prec-cutoff</c>
+
+        <c>Rate-L</c>
+
+        <c>Deny</c>
+
+        <c>Rate-L</c>
+
+        <c>ICMPv4-quench</c>
+
+        <c>Deny</c>
+
+        <c>Deny</c>
+
+        <c>Deny</c>
+
+        <!--    <c>ICMPv4-redirect</c>			<c>N/A</c>	<c>N/A</c>	<c>N/A</c> -->
+
+        <c>ICMPv4-redirect-net</c>
+
+        <c>Rate-L</c>
+
+        <c>Deny</c>
+
+        <c>Rate-L</c>
+
+        <c>ICMPv4-redirect-host</c>
+
+        <c>Rate-L</c>
+
+        <c>Deny</c>
+
+        <c>Rate-L</c>
+
+        <c>ICMPv4-redirect-tos-net</c>
+
+        <c>Rate-L</c>
+
+        <c>Deny</c>
+
+        <c>Rate-L</c>
+
+        <c>ICMPv4-redirect-tos-host</c>
+
+        <c>Rate-L</c>
+
+        <c>Deny</c>
+
+        <c>Rate-L</c>
+
+        <!--    <c>ICMPv4-timed</c>				<c>N/A</c>	<c>N/A</c>	<c>N/A</c> -->
+
+        <c>ICMPv4-timed-ttl</c>
+
+        <c>Rate-L</c>
+
+        <c>Permit</c>
+
+        <c>Rate-L</c>
+
+        <c>ICMPv4-timed-reass</c>
+
+        <c>Rate-L</c>
+
+        <c>Permit</c>
+
+        <c>Rate-L</c>
+
+        <!--    <c>ICMPv4-parameter</c>			<c>N/A</c>	<c>N/A</c>	<c>N/A</c> -->
+
+        <c>ICMPv4-parameter-pointer</c>
+
+        <c>Rate-L</c>
+
+        <c>Deny</c>
+
+        <c>Rate-L</c>
+
+        <c>ICMPv4-option-missing</c>
+
+        <c>Rate-L</c>
+
+        <c>Deny</c>
+
+        <c>Rate-L</c>
+
+        <c>ICMPv4-req-echo-message</c>
+
+        <c>Rate-L</c>
+
+        <c>Permit</c>
+
+        <c>Rate-L</c>
+
+        <c>ICMPv4-req-echo-reply</c>
+
+        <c>Rate-L</c>
+
+        <c>Permit</c>
+
+        <c>Rate-L</c>
+
+        <c>ICMPv4-req-router-sol</c>
+
+        <c>Rate-L</c>
+
+        <c>Deny</c>
+
+        <c>Rate-L</c>
+
+        <c>ICMPv4-req-router-adv</c>
+
+        <c>Rate-L</c>
+
+        <c>Deny</c>
+
+        <c>Rate-L</c>
+
+        <c>ICMPv4-req-timestamp-message</c>
+
+        <c>Rate-L</c>
+
+        <c>Deny</c>
+
+        <c>Rate-L</c>
+
+        <c>ICMPv4-req-timestamp-reply</c>
+
+        <c>Rate-L</c>
+
+        <c>Deny</c>
+
+        <c>Rate-L</c>
+
+        <c>ICMPv4-info-message (Depr)</c>
+
+        <c>Deny</c>
+
+        <c>Deny</c>
+
+        <c>Deny</c>
+
+        <c>ICMPv4-info-reply (Depr)</c>
+
+        <c>Deny</c>
+
+        <c>Deny</c>
+
+        <c>Deny</c>
+
+        <c>ICMPv4-mask-request</c>
+
+        <c>Rate-L</c>
+
+        <c>Deny</c>
+
+        <c>Rate-L</c>
+
+        <c>ICMPv4-mask-reply</c>
+
+        <c>Rate-L</c>
+
+        <c>Deny</c>
+
+        <c>Rate-L</c>
+
+        <postamble>Legend: "Depr" = Deprecated; "Rate-L" =
+        Rate-Limit</postamble>
+      </texttable>
+
+      <section anchor="ICMPv4-errors" title="ICMPv4 Error Messages">
+        <t><xref target="RFC0792"/> is the base specification for the Internet
+        Control Message Protocol (ICMP) to be used with the Internet Protocol
+        version 4 (IPv4). It defines, among other things, a number of error
+        messages that can be used by end-systems and intermediate systems to
+        report errors to the sending system. The Host Requirements RFC <xref
+        target="RFC1122"/> classifies ICMP error messages into those that
+        indicate "soft errors", and those that indicate "hard errors", thus
+        roughly defining the semantics of them.</t>
+
+        <t>Section 3.2.2.1 of <xref target="RFC1122"/> specifies the amount of
+        information to be included in the payload of an ICMP error message,
+        and how ICMP error messages should be demultiplexed to the
+        corresponding transport protocol instance. Additionally, it imposes
+        details some scenarios in which ICMP errors should not be
+        generated.</t>
+
+        <t>Section 4.1.3.3 of <xref target="RFC1122"/> states that UDP MUST
+        pass to the application layer all ICMP error messages that it receives
+        from the IP layer.</t>
+
+        <t>Section 4.2.3.9 of <xref target="RFC1122"/> states that TCP MUST
+        act on an ICMP error message passed up from the IP layer, directing it
+        to the connection that created the error.</t>
+
+        <t>Section 4.3.2 of <xref target="RFC1812"/> contains a number of
+        requirements for the generation and processing of ICMP error messages,
+        including: initialization of the TTL of the error message, the amount
+        of data from the offending packet to be included in the ICMP payload,
+        setting the IP Source Address of ICMP error messages, setting of the
+        TOS and Precedence, processing of IP Source Route option in offending
+        packets, scenarios in which routers MUST NOT send ICMP error messages,
+        and application of rate-limiting to ICMP error messages.</t>
+
+        <t>The ICMP specification <xref target="RFC0792"/> originally defined
+        the ICMP Source Quench message (type 4, code 0), which was meant to
+        provide a mechanism for flow control and congestion control. ICMP
+        Source Quench is being formally deprecated by <xref
+        target="I-D.ietf-tsvwg-source-quench"/>.</t>
+
+        <t>[RFC1191] defines a mechanism called "Path MTU Discovery (PMTUD),
+        which makes use of ICMP error messages of type 3 (Destination
+        Unreachable), code 4 (fragmentation needed and DF bit set) to allow
+        systems to determine the MTU of an arbitrary internet path.</t>
+
+        <t>Appendix D of <xref target="RFC4301"/> provides information about
+        which ICMP error messages are produced by hosts, intermediate routers,
+        or both.</t>
+
+        <section anchor="ICMPv4-unreach"
+                 title="Destination Unreachable (Type 3)">
+          <t>The ICMP Destination Unreachable message is sent by a router in
+          response to a packet which it cannot forward because the destination
+          (or next hop) is unreachable or a service is unavailable. Examples
+          of such cases include a message addressed to a host which is not
+          there and therefore does not respond to ARP requests, and messages
+          addressed to network prefixes for which the router has no valid
+          route. <xref target="RFC1812"/> states that a router MUST be able to
+          generate ICMP Destination Unreachable messages and SHOULD choose a
+          response code that most closely matches the reason the message is
+          being generated. Section 3.2.2.1 of <xref target="RFC1122"/> states
+          that a Destination Unreachable message that is received MUST be
+          reported to the transport layer, and that the transport layer SHOULD
+          use the information appropriately.</t>
+
+          <section anchor="ICMPv4-unreach-net"
+                   title="Net Unreachable (code 0)">
+            <section title="Uses">
+              <t>Used to indicate that a router cannot forward a packet
+              because it has no routes at all (including no default route) to
+              the destination specified in the packet. A number of systems
+              abort connections in non-synchronized states in response to this
+              message, to avoid long delays in connection establishment
+              attempts <xref target="RFC5461"/>.</t>
+            </section>
+
+            <section title="Message Specification">
+              <t>Defined in <xref target="RFC0792"/>. Section 4.3.3.1 of <xref
+              target="RFC1812"/> states that if a router cannot forward a
+              packet because it has no routes at all (including no default
+              route) to the destination specified in the packet, then the
+              router MUST generate a Destination Unreachable, Code 0 (Network
+              Unreachable) ICMP message. Section 3.2.2.1 of <xref
+              target="RFC1122"/> states that this message may result from a
+              routing transient, and MUST therefore be interpreted as only a
+              hint, not proof, that the specified destination is unreachable.
+              For example, it MUST NOT be used as proof of a dead gateway.
+              Section 4.2.3.9 of <xref target="RFC1122"/> states that this
+              message indicates a soft error, and therefore TCP MUST NOT abort
+              the connection, and SHOULD make the information available to the
+              application.</t>
+            </section>
+
+            <section title="Threats">
+              <t>An attacker can potentially perform a Denial of Service (DoS)
+              attack against the router by forcing it to generate a high
+              volume of ICMP Destination Unreachable messages. This can be
+              done by flooding the router with packets which the attacker
+              knows will result in the router spending resources in generating
+              a high volume of ICMP messages.</t>
+
+              <t>This attack be mitigated by rate-limiting the rate of IMCP
+              messages generated. For rate-limiting ICMPv4 messages see
+              Section 4.3.2.8 of <xref target="RFC1812"/>.</t>
+            </section>
+
+            <section title="Operational and Interoperability Impact if Blocked">
+              <t>May lead to long delays between connection establishment
+              attempts that could have been avoided by those systems aborting
+              non-synchronized connections in response to ICMP soft errors
+              <xref target="RFC5461"/>.</t>
+            </section>
+          </section>
+
+          <section anchor="ICMPv4-unreach-host"
+                   title="Host Unreachable (code 1)">
+            <section title="Uses">
+              <t>Used to indicate that a router cannot forward a to the
+              intended destination because it is unreachable. A number of
+              systems abort connections in non-synchronized states in response
+              to this message, to avoid long delays in connection
+              establishment attempts <xref target="RFC5461"/>.</t>
+            </section>
+
+            <section title="Message Specification">
+              <t>Defined in <xref target="RFC0792"/>. Section 3.2.2.1 of <xref
+              target="RFC1122"/> states that his message may result from a
+              routing transient, and MUST therefore be interpreted as only a
+              hint, not proof, that the specified destination is unreachable.
+              For example, it MUST NOT be used as proof of a dead gateway.
+              Section 4.2.3.9 of <xref target="RFC1122"/> states that this
+              message indicates a soft error, and therefore TCP MUST NOT abort
+              the connection, and SHOULD make the information available to the
+              application.</t>
+            </section>
+
+            <section title="Threats">
+              <t>An attacker can potentially perform a Denial of Service (DoS)
+              attack against the router by forcing it to generate a high
+              volume of ICMP Destination Unreachable messages. This can be
+              done by flooding the router with packets which the attacker
+              knows will result in the router spending resources in generating
+              a high volume of ICMP messages.</t>
+
+              <t>This can be mitigated by rate-limiting the rate of IMCP
+              messages generated. For rate-limiting ICMPv4 messages see
+              Section 4.3.2.8 of <xref target="RFC1812"/>.</t>
+            </section>
+
+            <section title="Operational and Interoperability Impact if Blocked">
+              <t>May lead to long delays between connection establishment
+              attempts that could have been avoided by those systems aborting
+              non-synchronized connections in response to ICMP soft errors
+              <xref target="RFC5461"/>.</t>
+            </section>
+          </section>
+
+          <section anchor="ICMPv4-unreach-proto"
+                   title="Protocol Unreachable (code 2)">
+            <section title="Uses">
+              <t>Used by hosts to indicate that the designated transport
+              protocol is not supported.</t>
+            </section>
+
+            <section title="Message Specification">
+              <t>Defined in <xref target="RFC0792"/>. <xref target="RFC1122"/>
+              states that a host SHOULD send a protocol unreachable when the
+              designated transport protocol is not supported. Section 4.2.3.9
+              of <xref target="RFC1122"/> states that this message indicates a
+              hard error condition, so TCP SHOULD abort the connection.</t>
+            </section>
+
+            <section title="Threats">
+              <t>Can be exploited to perform connection-reset attacks <xref
+              target="RFC5927"/>. Such attacks need to be mitigated at hosts,
+              as discussed in <xref target="RFC5927"/>.</t>
+
+              <t>An attacker can potentially perform a Denial of Service (DoS)
+              attack against the router by forcing it to generate a high
+              volume of ICMP Destination Unreachable messages. This can be
+              done by flooding the router with packets which the attacker
+              knows will result in the router spending resources in generating
+              a high volume of ICMP messages. These DoS attacks can be
+              mitigated by rate-limiting the rate of IMCP messages generated.
+              For rate-limiting ICMPv4 messages see Section 4.3.2.8 of <xref
+              target="RFC1812"/>.</t>
+            </section>
+
+            <section title="Operational and Interoperability Impact if Blocked">
+              <t>None.</t>
+            </section>
+          </section>
+
+          <section anchor="ICMPv4-unreach-port"
+                   title="Port Unreachable (code 3)">
+            <section title="Uses">
+              <t>Used by end-systems to signal the source system that it could
+              not demultiplex the received packet (i.e., there was no
+              listening process on the destination port). Used by UDP-based
+              trace route to locate the final destination (UDP probes are sent
+              to an UDP port that is believed to be unused). Some firewalls
+              respond with this error message when a received packet is
+              discarded due to a violation of the firewall security policy. A
+              number of systems abort connections in non-synchronized states
+              in response to this message, to avoid long delays in connection
+              establishment attempts <xref target="RFC5461"/>.</t>
+            </section>
+
+            <section title="Message Specification">
+              <t>Defined in <xref target="RFC0792"/>. Section 3.2.2.1 of <xref
+              target="RFC1122"/> states that a host SHOULD send an ICMP port
+              unreachable when the designated transport protocol (e.g., UDP)
+              is unable to demultiplex the datagram but has no protocol
+              mechanism to inform the sender. Additionally, it states that a
+              transport protocol that has its own mechanism for notifying the
+              sender that a port is unreachable MUST nevertheless accept an
+              ICMP Port Unreachable for the same purpose.</t>
+
+              <t>Section 4.2.3.9 of <xref target="RFC1122"/> states that this
+              message indicates a hard error condition, so TCP SHOULD abort
+              the connection.</t>
+            </section>
+
+            <section title="Threats">
+              <t>Can be exploited to perform connection-reset attacks <xref
+              target="RFC5927"/>. Such attacks need to be mitigated at hosts,
+              as discussed in <xref target="RFC5927"/>.</t>
+
+              <t>An attacker can potentially perform a Denial of Service (DoS)
+              attack against the router by forcing it to generate a high
+              volume of ICMP Destination Unreachable messages. This can be
+              done by flooding the router with packets which the attacker
+              knows will result in the router spending resources in generating
+              a high volume of ICMP messages. These DoS attacks can be
+              mitigated by rate-limiting the rate of IMCP messages generated.
+              For rate-limiting ICMPv4 messages see Section 4.3.2.8 of <xref
+              target="RFC1812"/>.</t>
+            </section>
+
+            <section title="Operational and Interoperability Impact if Blocked">
+              <t>May lead to long delays between connection establishment
+              attempts or long response times that could have been avoided by
+              aborting non-synchronized connections in response to ICMP soft
+              errors <xref target="RFC5461"/>.</t>
+            </section>
+          </section>
+
+          <section anchor="ICMPv4-unreach-frag-needed"
+                   title="Fragmentation Needed and DF Set (code 4)">
+            <section title="Uses">
+              <t>Used for the Path-MTU Discovery mechanism described in <xref
+              target="RFC1191"/>.</t>
+            </section>
+
+            <section title="Message Specification">
+              <t>Defined in <xref target="RFC0792"/></t>
+            </section>
+
+            <section title="Threats">
+              <t>This error message can be used to perform Denial of Service
+              (DoS) attacks against transport protocols. <xref
+              target="RFC5927"/> describes the use of this error message to
+              attack TCP connections.</t>
+            </section>
+
+            <section title="Operational and Interoperability Impact if Blocked">
+              <t>Filtering this error message breaks the Path-MTU Discovery
+              mechansim described in <xref target="RFC1191"/>.</t>
+            </section>
+          </section>
+
+          <section anchor="ICMPv4-unreach-src-route"
+                   title="Source Route Failed (code 5)">
+            <section title="Uses">
+              <t>Signals errors araising from IPv4 source routes.</t>
+            </section>
+
+            <section title="Message Specification">
+              <t>Defined in <xref target="RFC0792"/>. Section 3.2.2.1 of <xref
+              target="RFC1122"/> states that his message may result from a
+              routing transient, and MUST therefore be interpreted as only a
+              hint, not proof, that the specified destination is unreachable.
+              For example, it MUST NOT be used as proof of a dead gateway.
+              Section 4.2.3.9 of <xref target="RFC1122"/> states that this
+              message indicates a soft error, and therefore TCP MUST NOT abort
+              the connection, and SHOULD make the information available to the
+              application.</t>
+
+              <t>Section 4.2.3.9 of <xref target="RFC1122"/> states that this
+              message indicates a hard error condition, so TCP SHOULD abort
+              the connection.</t>
+            </section>
+
+            <section title="Threats">
+              <t>An attacker can potentially perform a Denial of Service (DoS)
+              attack against the router by forcing it to generate a high
+              volume of ICMP Destination Unreachable messages. This can be
+              done by flooding the router with packets which the attacker
+              knows will result in the router spending resources in generating
+              a high volume of ICMP messages.</t>
+
+              <t>This can be mitigated by rate-limiting the rate of IMCP
+              messages generated. For rate-limiting ICMPv4 messages see
+              Section 4.3.2.8 of <xref target="RFC1812"/>.</t>
+            </section>
+
+            <section title="Operational and Interoperability Impact if Blocked">
+              <t>May lead to long delays between connection establishment
+              attempts or long response times that could have been avoided by
+              aborting non-synchronized connections in response to ICMP soft
+              errors <xref target="RFC5461"/>.</t>
+            </section>
+          </section>
+
+          <section anchor="ICMPv4-unreach-net-unknown"
+                   title="Destination Network Unknown (code 6) (Deprecated)">
+            <section title="Uses">
+              <t>Signal unreachability condition to the sending system.
+              Currently deprecated. A number of systems abort connections in
+              non-synchronized states in response to this message, to avoid
+              long delays in connection establishment attempts <xref
+              target="RFC5461"/>.</t>
+            </section>
+
+            <section title="Message Specification">
+              <t>Defined in <xref target="RFC1122"/>. <xref target="RFC1812"/>
+              states that this code SHOULD NOT be generated since it would
+              imply on the part of the router that the destination network
+              does not exist (net unreachable code 0 SHOULD be used in place
+              of code 6).</t>
+            </section>
+
+            <section title="Threats">
+              <t>An attacker can potentially perform a Denial of Service (DoS)
+              attack against the router by forcing it to generate a high
+              volume of ICMP Destination Unreachable messages. This can be
+              done by flooding the router with packets which the attacker
+              knows will result in the router spending resources in generating
+              a high volume of ICMP messages.</t>
+
+              <t>This can be mitigated by not-generating and dropping (rather
+              than forwarding) these messages (since they have been
+              deprecated).</t>
+            </section>
+
+            <section title="Operational and Interoperability Impact if Blocked">
+              <t>May lead to long delays between connection establishment
+              attempts or long response times that could have been avoided by
+              aborting non-synchronized connections in response to ICMP soft
+              errors <xref target="RFC5461"/>.</t>
+            </section>
+          </section>
+
+          <section anchor="ICMPv4-unreach-host-unknown"
+                   title="Destination Host Unknown (code 7)">
+            <section title="Uses">
+              <t>Signal unreachability condition to the sending system. A
+              number of systems abort connections in non-synchronized states
+              in response to this message, to avoid long delays in connection
+              establishment attempts <xref target="RFC5461"/>.</t>
+            </section>
+
+            <section title="Message Specification">
+              <t>Defined in <xref target="RFC1122"/>, and is generated only
+              when a router can determine (from link layer advice) that the
+              destination host does not exist</t>
+            </section>
+
+            <section title="Threats">
+              <t>An attacker can potentially perform a Denial of Service (DoS)
+              attack against the router by forcing it to generate a high
+              volume of ICMP Destination Unreachable messages. This can be
+              done by flooding the router with packets which the attacker
+              knows will result in the router spending resources in generating
+              a high volume of ICMP messages.</t>
+
+              <t>This can be mitigated by rate-limiting the rate of IMCP
+              messages generated. For rate-limiting ICMPv4 messages see
+              Section 4.3.2.8 of <xref target="RFC1812"/>.</t>
+            </section>
+
+            <section title="Operational and Interoperability Impact if Blocked">
+              <t>May lead to long delays between connection establishment
+              attempts or long response times that could have been avoided by
+              aborting non-synchronized connections in response to ICMP soft
+              errors <xref target="RFC5461"/>.</t>
+            </section>
+          </section>
+
+          <section anchor="ICMPv4-unreach-host-isolated"
+                   title="Source Host Isolated (code 8) (Deprecated)">
+            <section title="Uses">
+              <t>Signal unreachability condition to the sending system, but is
+              currently deprecated. A number of systems abort connections in
+              non-synchronized states in response to this message, to avoid
+              long delays in connection establishment attempts <xref
+              target="RFC5461"/>.</t>
+            </section>
+
+            <section title="Message Specification">
+              <t>Defined in <xref target="RFC1122"/>. <xref target="RFC1812"/>
+              states that routers SHOULD NOT generate this error message, and
+              states that whichever of Codes 0 (Network Unreachable) and 1
+              (Host Unreachable) is appropriate SHOULD be used instead.</t>
+            </section>
+
+            <section title="Threats">
+              <t>An attacker can potentially perform a Denial of Service (DoS)
+              attack against the router by forcing it to generate a high
+              volume of ICMP Destination Unreachable messages. This can be
+              done by flooding the router with packets which the attacker
+              knows will result in the router spending resources in generating
+              a high volume of ICMP messages.</t>
+
+              <t>This can be mitigated by rate-limiting the rate of IMCP
+              messages generated. For rate-limiting ICMPv4 messages see
+              Section 4.3.2.8 of <xref target="RFC1812"/>.</t>
+            </section>
+
+            <section title="Operational and Interoperability Impact if Blocked">
+              <t>Might lead to long delays between connection establishment
+              attempts or long response times that could have been avoided by
+              aborting non-synchronized connections in response to ICMP soft
+              errors <xref target="RFC5461"/>. However, this error message is
+              deprecated, and thus systems should not depend on it for any
+              purpose.</t>
+            </section>
+          </section>
+
+          <section anchor="ICMPv4-unreach-net-prohibited"
+                   title="Communication with Destination Network Administratively Prohibited (code 9) (Deprecated)">
+            <section title="Uses">
+              <t>Signal unreachability condition to the sending system. A
+              number of systems abort connections in non-synchronized states
+              in response to this message, to avoid long delays in connection
+              establishment attempts <xref target="RFC5461"/>.</t>
+            </section>
+
+            <section title="Message Specification">
+              <t>This error code is defined in <xref target="RFC1122"/>, and
+              was intended for use by end-to-end encryption devices used by
+              U.S military agencies. <xref target="RFC1812"/> deprecates its
+              use, stating that routers SHOULD use the Code 13 (Communication
+              Administratively Prohibited) if they administratively filter
+              packets.</t>
+            </section>
+
+            <section title="Threats">
+              <t>May reveal filtering policies. In orther to mitigate this
+              issue, a node could deny the generation of these error messages.
+              However, we note that this would also have a negative impact on
+              network troubleshooting.</t>
+
+              <t>An attacker can potentially perform a Denial of Service (DoS)
+              attack against the router by forcing it to generate a high
+              volume of ICMP Destination Unreachable messages. This can be
+              done by flooding the router with packets which the attacker
+              knows will result in the router spending resources in generating
+              a high volume of ICMP messages. These DoS attacks can be
+              mitigated by rate-limiting the rate of IMCP messages generated.
+              For rate-limiting ICMPv4 messages see Section 4.3.2.8 of <xref
+              target="RFC1812"/>.</t>
+            </section>
+
+            <section title="Operational and Interoperability Impact if Blocked">
+              <t>May lead to long delays between connection establishment
+              attempts or long response times that could have been avoided by
+              aborting non-synchronized connections in response to ICMP soft
+              errors <xref target="RFC5461"/>. However, this error message is
+              deprecated, and thus system should not depend on it for any
+              purpose.</t>
+            </section>
+          </section>
+
+          <section anchor="ICMPv4-unreach-host-prohibited"
+                   title="Communication with Destination Host Administratively Prohibited (code 10) (Deprecated)">
+            <section title="Uses">
+              <t>Signal unreachability condition to the sending system, but is
+              currently deprecated. A number of systems abort connections in
+              non-synchronized states in response to this message, to avoid
+              long delays in connection establishment attempts <xref
+              target="RFC5461"/>.</t>
+            </section>
+
+            <section title="Message Specification">
+              <t>This error code is defined in <xref target="RFC1122"/>, and
+              was intended for use by end-to-end encryption devices used by
+              U.S military agencies. <xref target="RFC1812"/> deprecates its
+              use, stating that routers SHOULD use the Code 13 (Communication
+              Administratively Prohibited) if they administratively filter
+              packets.</t>
+            </section>
+
+            <section title="Threats">
+              <t>May reveal filtering policies. In orther to mitigate this
+              issue, a node could deny the generation of these error messages.
+              However, we note that this would also have a negative impact on
+              network troubleshooting.</t>
+
+              <t>An attacker can potentially perform a Denial of Service (DoS)
+              attack against the router by forcing it to generate a high
+              volume of ICMP Destination Unreachable messages. This can be
+              done by flooding the router with packets which the attacker
+              knows will result in the router spending resources in generating
+              a high volume of ICMP messages.</t>
+
+              <t>This can be mitigated by rate-limiting the rate of ICMP
+              messages generated. For rate-limiting ICMPv4 messages see
+              Section 4.3.2.8 of <xref target="RFC1812"/>.</t>
+            </section>
+
+            <section title="Operational and Interoperability Impact if Blocked">
+              <t>May lead to long delays between connection establishment
+              attempts or long response times that could have been avoided by
+              aborting non-synchronized connections in response to ICMP soft
+              errors <xref target="RFC5461"/>. However, this error message is
+              deprecated, and thus system should not depend on it for any
+              purpose.</t>
+            </section>
+          </section>
+
+          <section anchor="ICMPv4-unreach-net-tos"
+                   title="Network Unreachable for Type of Service (code 11)">
+            <section title="Uses">
+              <t>Signal unreachability condition to the sending system when
+              TOS-based routing is implemented, because the TOS specified for
+              the routes is neither the default TOS (0000) nor the TOS of the
+              packet that the router is attempting to route. A number of
+              systems abort connections in non-synchronized states in response
+              to this message, to avoid long delays in connection
+              establishment attempts <xref target="RFC5461"/>.</t>
+            </section>
+
+            <section title="Message Specification">
+              <t>Defined in <xref target="RFC1122"/>. Section 4.3.3.1 of <xref
+              target="RFC1812"/> states that if a router cannot forward a
+              packet because the TOS specified for the routes is neither the
+              default TOS (0000) nor the TOS of the packet that the router is
+              attempting to route, then the router MUST generate a Destination
+              Unreachable, Code 11 (Network Unreachable for TOS) ICMP
+              message.</t>
+            </section>
+
+            <section title="Threats">
+              <t>May reveal routing policies.</t>
+
+              <t>An attacker can potentially perform a Denial of Service (DoS)
+              attack against the router by forcing it to generate a high
+              volume of ICMP Destination Unreachable messages. This can be
+              done by flooding the router with packets which the attacker
+              knows will result in the router spending resources in generating
+              a high volume of ICMP messages. This can be mitigated by
+              rate-limiting the rate of ICMP messages generated. For
+              rate-limiting ICMPv4 messages see Section 4.3.2.8 of <xref
+              target="RFC1812"/>.</t>
+            </section>
+
+            <section title="Operational and Interoperability Impact if Blocked">
+              <t>May lead to long delays between connection establishment
+              attempts or long response times that could have been avoided by
+              aborting non-synchronized connections in response to ICMP soft
+              errors <xref target="RFC5461"/>.</t>
+            </section>
+          </section>
+
+          <section anchor="ICMPv4-unreach-host-tos"
+                   title="Host Unreachable for Type of Service (code 12)">
+            <section title="Uses">
+              <t>Signal unreachability condition to the sending system, when
+              TOS-based routing is implemented, because the TOS specified for
+              the routes is neither the default TOS (0000) nor the TOS of the
+              packet that the router is attempting to route. A number of
+              systems abort connections in non-synchronized states in response
+              to this message, to avoid long delays in connection
+              establishment attempts <xref target="RFC5461"/>.</t>
+
+              <section title="Message Specification">
+                <t>Defined in <xref target="RFC1122"/>. Section 4.3.3.1 of
+                <xref target="RFC1812"/> states that this message is sent if a
+                packet is to be forwarded to a host that is on a network that
+                is directly connected to the router and the router cannot
+                forward the packet because no route to the destination has a
+                TOS that is either equal to the TOS requested in the packet or
+                is the default TOS (0000).</t>
+              </section>
+            </section>
+
+            <section title="Threats">
+              <t>May reveal routing policies.</t>
+
+              <t>An attacker can potentially perform a Denial of Service (DoS)
+              attack against the router by forcing it to generate a high
+              volume of ICMP Destination Unreachable messages. This can be
+              done by flooding the router with packets which the attacker
+              knows will result in the router spending resources in generating
+              a high volume of ICMP messages. This can be mitigated by
+              rate-limiting the rate of ICMP messages generated. For
+              rate-limiting ICMPv4 messages see Section 4.3.2.8 of <xref
+              target="RFC1812"/>.</t>
+            </section>
+
+            <section title="Operational and Interoperability Impact if Blocked">
+              <t>May lead to long delays between connection establishment
+              attempts or long response times that could have been avoided by
+              aborting non-synchronized connections in response to ICMP soft
+              errors <xref target="RFC5461"/>.</t>
+            </section>
+          </section>
+
+          <section anchor="ICMPv4-unreach-admin"
+                   title="Communication Administratively Prohibited (code 13)">
+            <section title="Uses">
+              <t>Signal unreachability condition (due to filtering policies)
+              to the sending system. A number of systems abort connections in
+              non-synchronized states in response to this message, to avoid
+              long delays in connection establishment attempts <xref
+              target="RFC5461"/>.</t>
+            </section>
+
+            <section title="Message Specification">
+              <t>Defined in <xref target="RFC1812"/>, and is generated if a
+              router cannot forward a packet due to administrative
+              filtering.</t>
+            </section>
+
+            <section title="Threats">
+              <t>May reveal filtering policies.</t>
+
+              <t>Given that the semantics of this error message are not
+              accurately specified, some systems might abort transport
+              connections upon receipt of this error message. <xref
+              target="RFC5927"/>.</t>
+
+              <t>An attacker can potentially perform a Denial of Service (DoS)
+              attack against the router by forcing it to generate a high
+              volume of ICMP Destination Unreachable messages. This can be
+              done by flooding the router with packets which the attacker
+              knows will result in the router spending resources in generating
+              a high volume of ICMP messages. This can be mitigated by
+              rate-limiting the rate of ICMP messages generated. For
+              rate-limiting ICMPv4 messages see Section 4.3.2.8 of <xref
+              target="RFC1812"/>.</t>
+            </section>
+
+            <section title="Operational and Interoperability Impact if Blocked">
+              <t>May lead to long delays between connection establishment
+              attempts or long response times that could have been avoided by
+              aborting non-synchronized connections in response to ICMP soft
+              errors <xref target="RFC5461"/>.</t>
+            </section>
+          </section>
+
+          <section anchor="ICMPv4-unreach-precedence-violation"
+                   title="Host Precedence Violation (code 14)">
+            <section title="Uses">
+              <t>Signal unreachability condition to the sending system. A
+              number of systems abort connections in non-synchronized states
+              in response to this message, to avoid long delays in connection
+              establishment attempts <xref target="RFC5461"/>.</t>
+            </section>
+
+            <section title="Message Specification">
+              <t>Defined in <xref target="RFC1812"/>, and is sent by the first
+              hop router to a host to indicate that a requested precedence is
+              not permitted for the particular combination of
+              source/destination host or network, upper layer protocol, and
+              source/destination port</t>
+            </section>
+
+            <section title="Threats">
+              <t>May reveal routing policies.</t>
+
+              <t>An attacker can potentially perform a Denial of Service (DoS)
+              attack against the router by forcing it to generate a high
+              volume of ICMP Destination Unreachable messages. This can be
+              done by flooding the router with packets which the attacker
+              knows will result in the router spending resources in generating
+              a high volume of ICMP messages. This can be mitigated by
+              rate-limiting the rate of ICMP messages generated. For
+              rate-limiting ICMPv4 messages see Section 4.3.2.8 of <xref
+              target="RFC1812"/>.</t>
+            </section>
+
+            <section title="Operational and Interoperability Impact if Blocked">
+              <t>May lead to long delays between connection establishment
+              attempts or long response times that could have been avoided by
+              aborting non-synchronized connections in response to ICMP soft
+              errors <xref target="RFC5461"/>.</t>
+            </section>
+          </section>
+
+          <section anchor="ICMPv4-unreach-precedence-cutoff"
+                   title="Precedence Cutoff in Effect (code 15)">
+            <section title="Uses">
+              <t>A number of systems abort connections in non-synchronized
+              states in response to this message, to avoid long delays in
+              connection establishment attempts <xref target="RFC5461"/>.</t>
+            </section>
+
+            <section title="Message Specification">
+              <t>Defined in <xref target="RFC1812"/>, and is sent when the
+              network operators have imposed a minimum level of precedence
+              required for operation, and a datagram was sent with a
+              precedence below this level.</t>
+            </section>
+
+            <section title="Threats">
+              <t>An attacker can potentially perform a Denial of Service (DoS)
+              attack against the router by forcing it to generate a high
+              volume of ICMP Destination Unreachable messages. This can be
+              done by flooding the router with packets which the attacker
+              knows will result in the router spending resources in generating
+              a high volume of ICMP messages. This can be mitigated by
+              rate-limiting the rate of ICMP messages generated. For
+              rate-limiting ICMPv4 messages see Section 4.3.2.8 of <xref
+              target="RFC1812"/>.</t>
+            </section>
+
+            <section title="Operational and Interoperability Impact if Blocked">
+              <t>May lead to long delays between connection establishment
+              attempts or long response times that could have been avoided by
+              aborting non-synchronized connections in response to ICMP soft
+              errors <xref target="RFC5461"/>.</t>
+            </section>
+          </section>
+        </section>
+
+        <section anchor="ICMPv4-quench" title="Source Quench (Type 4, Code 0)">
+          <section title="Uses">
+            <t>Originally meant to aid in congestion-control and flow-control.
+            Currently ignored by most end-system implementations, because of
+            its security implications (see <xref target="RFC5927"/>. It is
+            being formally deprecated by <xref
+            target="I-D.ietf-tsvwg-source-quench"/>.</t>
+          </section>
+
+          <section title="Message Specification">
+            <t>The Source Quench message was originally specified in <xref
+            target="RFC0792"/>. It is being formally deprecated by <xref
+            target="I-D.ietf-tsvwg-source-quench"/>.</t>
+
+            <!--
+<t>Section 3.2.2.3 of <xref target="RFC1122"/> states that host MAY send a Source Quench message if it is approaching, or has reached, the point at which it is forced to discard incoming datagrams due to a shortage of reassembly buffers or other resources. It also states that if a Source Quench message is received, the IP layer MUST pass it to the tansport layer, which SHOULD implement a mechanism for responding to ICMP Source Quench messages.</t>
+
+<t>
+Section 4.2.3.9 of the Host Requirements RFC <xref target="RFC1122"/> states that TCP MUST react to ICMP Source Quench messages by slowing transmission on the connection, and further further adds that the RECOMMENDED procedure is to put the corresponding connection in the slow-start phase of TCP's congestion control algorithm <xref target="RFC5681"/>.
+</t>
+
+<t>Section 4.3.3.3 of the Requirements for IP Version 4 Routers RFC <xref target="RFC1812"/> notes that research seems to suggest that ICMP Source Quench is an ineffective (and unfair) antidote for congestion, and states that routers SHOULD NOT send ICMP Source Quench messages in response to congestion. A router that does originate Source Quench messages MUST be able to limit the rate at which they are generated. Finally, Section 4.3.3.3 of <xref target="RFC1812"/> states that a router MAY ignore any ICMP Source Quench messages it receives.</t>
+-->
+          </section>
+
+          <section title="Threats">
+            <t>Can be exploited for performing throughput-reduction attacks
+            <xref target="RFC5927"/>.</t>
+          </section>
+
+          <section title="Operational and Interoperability Impact if Blocked">
+            <t>None.</t>
+          </section>
+        </section>
+
+        <section anchor="ICMPv4-redirect" title="Redirect (Type 5)">
+          <t>Section 3.2.2.2 of <xref target="RFC1122"/> states that SHOULD
+          NOT send an ICMP Redirect message, and that a host receiving a
+          Redirect message MUST update its routing information accordingly,
+          and process the ICMP redirect according to the rules stated in
+          Section 3.3.1.2 of <xref target="RFC1122"/>. ICMP redirects that
+          specify a a gateway that is not on the same connected (sub-) net
+          through which the Redirect arrived, or that are received from a
+          source other than the first-hop gateway SHOULD be silently
+          disacarded.</t>
+
+          <t>Section 4.3.3.2 of <xref target="RFC1812"/> states that a router
+          MAY ignore ICMP Redirects when choosing a path for a packet
+          originated by the router if the router is running a routing protocol
+          or if forwarding is enabled on the router and on the interface over
+          which the packet is being sent.</t>
+
+          <section anchor="ICMPv4-redirect-net"
+                   title="Redirect Datagrams for the Network (code 0)">
+            <section title="Uses">
+              <t>Used by routers to communicate end-systems a better first-hop
+              router for a particular network. Currently ignored by a large
+              number of stacks.</t>
+            </section>
+
+            <section title="Message Specification">
+              <t>Defined in <xref target="RFC0792"/>.</t>
+            </section>
+
+            <section title="Threats">
+              <t>Can be abused by an attacker to redirect all or some traffic
+              to himself and/or to perform a DoS attack.</t>
+
+              <t>This issue could be mitigated by disabling reaction to ICMP
+              Redirect messages at hosts and/or dropping these messages at the
+              network.</t>
+            </section>
+
+            <section title="Operational and Interoperability Impact if Blocked">
+              <t>If the ICMP redirect was originated in some network segment
+              other than the one it should be forwarded on, there is no
+              operational impact, as the message is bogus or part of an
+              attack. If an ICMP Redirect that was locally generated is
+              blocked, the end-system will not be informed of the better
+              first-hop for reaching the target network, and thus this would
+              result in less-optimum routes being used to get the target
+              network.</t>
+            </section>
+          </section>
+
+          <section anchor="ICMPv4-redirect-host"
+                   title="Redirect Datagrams for the Host (code 1)">
+            <section title="Uses">
+              <t>Used by routers to communicate end-systems a better first-hop
+              for a particular host. Currently ignored my a large number of
+              stacks.</t>
+            </section>
+
+            <section title="Message Specification">
+              <t>Defined in <xref target="RFC0792"/>.</t>
+            </section>
+
+            <section title="Threats">
+              <t>Can be abused by an attacker to redirect all or some traffic
+              to himself and/or to perform a DoS attack.</t>
+
+              <t>This issue could be mitigated by disabling reaction to ICMP
+              Redirect messages at hosts and/or dropping these messages at the
+              network.</t>
+            </section>
+
+            <section title="Operational and Interoperability Impact if Blocked">
+              <t>If the ICMP redirect was originated in some network segment
+              other than the one it should be forwarded on, there is no
+              operational impact, as the message is bogus or part of an
+              attack. If an ICMP Redirect that was locally generated is
+              blocked, the end-system will not be informed of the better
+              first-hop for reaching the target network, and thus this would
+              result in less-optimum routes being used to get the target
+              network.</t>
+            </section>
+          </section>
+
+          <section anchor="ICMPv4-redirect-tos-net"
+                   title="Redirect datagrams for the Type of Service and Network (code 2)">
+            <section title="Uses">
+              <t>Used by routers to communicate end-systems a better first-hop
+              router for a particular network. Currently ignored my a large
+              number of stacks.</t>
+            </section>
+
+            <section title="Message Specification">
+              <t>Defined in <xref target="RFC0792"/>.</t>
+            </section>
+
+            <section title="Threats">
+              <t>Can be abused by an attacker to direct all or some traffic to
+              himself and/or to perform a DoS attack.</t>
+
+              <t>This issue could be mitigated by disabling reaction to ICMP
+              Redirect messages at hosts and/or dropping these messages at the
+              network.</t>
+            </section>
+
+            <section title="Operational and Interoperability Impact if Blocked">
+              <t>If the ICMP redirect was originated in some network segment
+              other than the one it should be forwarded on, there is no
+              operational impact, as the message is bogus or part of an
+              attack. If an ICMP Redirect that was locally generated is
+              blocked, the end-system will not be informed of the better
+              first-hop for reaching the target network, and thus this would
+              result in less-optimum routes being used to get the target
+              network.</t>
+            </section>
+          </section>
+
+          <section anchor="ICMPv4-redirect-tos-host"
+                   title="Redirect Datagrams for the Type of Service and Host (code 3)">
+            <section title="Uses">
+              <t>Used by routers to communicate end-systems a better first-hop
+              for a particular host. Currently ignored my a large number of
+              stacks.</t>
+            </section>
+
+            <section title="Message Specification">
+              <t>Defined in <xref target="RFC0792"/>.</t>
+            </section>
+
+            <section title="Threats">
+              <t>Can be abused by an attacker to redirect all or some traffic
+              to himself and/or to perform a DoS attack.</t>
+            </section>
+
+            <section title="Operational and Interoperability Impact if Blocked">
+              <t>If the ICMP redirect was originated in some network segment
+              other than the one it should be forwarded on, there is no
+              operational impact, as the message is bogus or part of an
+              attack. If an ICMP Redirect that was locally generated is
+              blocked, the end-system will not be informed of the better
+              first-hop for reaching the target network, and thus this would
+              result in less-optimum routes being used to get the target
+              network.</t>
+            </section>
+          </section>
+        </section>
+
+        <section anchor="ICMPv4-timed" title="Time Exceeded (Type 11)">
+          <t>Section 3.2.2.4 of <xref target="RFC1122"/> states that an
+          incoming Time Exceeded message MUST be passed to the transport
+          layer.</t>
+
+          <t>Section 4.3.3.4 of <xref target="RFC1812"/> states that when the
+          router receives (i.e., is destined for the router) a Time Exceeded
+          message, it MUST comply with <xref target="RFC1122"/>.</t>
+
+          <section anchor="ICMPv4-timed-ttl"
+                   title="Time to Live Exceeded in Transit (code 0)">
+            <section title="Uses">
+              <t>Used for the traceroute troubleshooting tool. Signals
+              unreachability condition due to routing loops. A number of
+              systems abort connections in non-synchronized states in response
+              to this message, to avoid long delays in connection
+              establishment attempts <xref target="RFC5461"/>.</t>
+            </section>
+
+            <section title="Message Specification">
+              <t>Defined in <xref target="RFC0792"/>.</t>
+
+              <t><xref target="RFC1812"/> states that a router MUST generate a
+              Time Exceeded message Code 0 (In Transit) when it discards a
+              packet due to an expired TTL field. Section 4.2.3.9 of <xref
+              target="RFC1122"/> states that this message should be handled by
+              TCP in the same way as Destination Unreachable codes 0, 1,
+              5.</t>
+            </section>
+
+            <section title="Threats">
+              <t>Can be used for network mapping.</t>
+            </section>
+
+            <section title="Operational and Interoperability Impact if Blocked">
+              <t>Breaks the traceroute tool. May lead to long delays between
+              connection establishment attempts or long response times that
+              could have been avoided by aborting non-synchronized connections
+              in response to ICMP soft errors <xref target="RFC5461"/>.</t>
+            </section>
+          </section>
+
+          <section anchor="ICMPv4-timed-reass"
+                   title="Fragment Reassembly Time Exceeded (code 1)">
+            <section title="Uses">
+              <t>Signals fragment reassembly timeout. A number of systems
+              abort connections in non-synchronized states in response to this
+              message, to avoid long delays in connection establishment
+              attempts <xref target="RFC5461"/>.</t>
+            </section>
+
+            <section title="Message Specification">
+              <t>Defined in <xref target="RFC0792"/>. <xref target="RFC0792"/>
+              states this message may be sent by a host reassembling a
+              fragmented datagram if it cannot complete the reassembly due to
+              missing fragments within its time limit. Section 4.2.3.9 of
+              <xref target="RFC1122"/> states that this message should be
+              handled by TCP in the same way as Destination Unreachable codes
+              0, 1, 5.</t>
+            </section>
+
+            <section title="Threats">
+              <t>May reveal the timeout value used by a system for fragment
+              reassembly, and thus aid in evading NIDSs and fingerprinting the
+              operating system in use by the sender of this error message.</t>
+            </section>
+
+            <section title="Operational and Interoperability Impact if Blocked">
+              <t>May lead to long delays between connection establishment
+              attempts or long response times that could have been avoided by
+              aborting non-synchronized connections in response to ICMP soft
+              errors <xref target="RFC5461"/>.</t>
+            </section>
+          </section>
+        </section>
+
+        <section anchor="ICMPv4-parameter" title="Parameter Problem (Type 12)">
+          <t>Section 3.2.2.5 of <xref target="RFC1122"/> states that a host
+          SHOULD generate Parameter Problem messages. An incoming Parameter
+          Problem message MUST be passed to the transport layer, and it MAY be
+          reported to the user. Section 4.2.3.9 of <xref target="RFC1122"/>
+          states that this message should be handled by TCP in the same way as
+          Destination Unreachable codes 0, 1, 5.</t>
+
+          <t>Section 4.3.3.5 of <xref target="RFC1812"/> states that a router
+          MUST generate a Parameter Problem message for any error not
+          specifically covered by another ICMP message. The IP header field or
+          IP option including the byte indicated by the pointer field MUST be
+          included unchanged in the IP header returned with this ICMP message.
+          Section 4.3.2 of the same document defines an exception to this
+          rule.</t>
+
+          <section anchor="ICMPv4-parameter-pointer"
+                   title="Pointer Indicates the Error (code 0)">
+            <section title="Uses">
+              <t>A number of systems abort connections in non-synchronized
+              states in response to this message, to avoid long delays in
+              connection establishment attempts <xref target="RFC5461"/>.</t>
+            </section>
+
+            <section title="Message Specification">
+              <t>Defined in <xref target="RFC0792"/>.</t>
+            </section>
+
+            <section title="Threats">
+              <t>May be used to fingerprint the operating system of the host
+              sending this error message.</t>
+            </section>
+
+            <section title="Operational and Interoperability Impact if Blocked">
+              <t>May lead to long delays between connection establishment
+              attempts or long response times that could have been avoided by
+              aborting non-synchronized connections in response to ICMP soft
+              errors <xref target="RFC5461"/>.</t>
+            </section>
+          </section>
+
+          <section anchor="ICMPv4-option-missing"
+                   title="Required Option is Missing (code 1)">
+            <section title="Uses">
+              <t>This ICMP Parameter Problem message code is sent whenever a
+              received IP packet should have contained a particular IP Option
+              but the actual received IP packet did not contain that IP
+              option. At present, a common situation in which this is ICMP
+              Parameter Problem message type is likely to arise is in certain
+              high-security IP deployments where one or more IP Security
+              options (e.g. RFC-1108, CIPSO) are deployed, and a packet is
+              missing one of those security options. Other similar situations
+              might also exist now, or in future.</t>
+            </section>
+
+            <section title="Message Specification">
+              <t>Defined in Section 3.2.2.5 of <xref target="RFC1122"/>.</t>
+            </section>
+
+            <section title="Threats">
+              <t>None.</t>
+            </section>
+
+            <section title="Operational and Interoperability Impact if Blocked">
+              <t>May lead to long delays between connection establishment
+              attempts or long response times that could have been avoided by
+              aborting non-synchronized connections in response to ICMP soft
+              errors <xref target="RFC5461"/>.</t>
+
+              <t>Additionally, blocking this ICMP message would make network
+              trouble-shooting difficult or impossible in networks where IP
+              Security Options (e.g. CIPSO, IPSO) are deployed. So blocking
+              these ICMP messages could lead to a kind of denial-of-service
+              attack on such deployments.</t>
+            </section>
+          </section>
+        </section>
+      </section>
+
+      <section anchor="ICMPv4-req" title="ICMPv4 Informational Messages">
+        <section anchor="ICMPv4-req-echo" title="Echo or Echo Reply Message">
+          <section anchor="ICMPv4-req-echo-message"
+                   title="Echo Message (type 8, code 0)">
+            <section title="Uses">
+              <t>Used by the ping troubleshooting tool.</t>
+            </section>
+
+            <section title="Message Specification">
+              <t>Defined in <xref target="RFC0792"/>.</t>
+
+              <t>Section 3.2.2.6 of <xref target="RFC1122"/> states that every
+              host MUST implement an ICMP Echo server function that receives
+              Echo Requests and sends corresponding Echo Replies. A host
+              SHOULD also implement an application-layer interface for sending
+              an Echo Request and receiving an Echo Reply, for diagnostic
+              purposes. Section 3.2.2.6 of <xref target="RFC1122"/> includes a
+              number of requirements for the processing of ICMP Echo messages
+              and the generation of the corresponding replies.</t>
+
+              <t>Section 4.3.3.6 of <xref target="RFC1812"/> contains a number
+              of requirements with respect to the generation and processing of
+              ICMP Echo or Echo Reply messsages, including: maximum ICMP
+              message size all routers are required to receive, a number of
+              factors that may determine whether a router responds (or not) to
+              an ICMP Echo message, the implementation of a
+              user/application-layer interface, and the processing of Record
+              Route, Timestamp and/or Source Route options that might be
+              present in an ICMP Echo message.</t>
+            </section>
+
+            <section title="Threats">
+              <t>Can be used for network mapping <xref
+              target="icmp-scanning"/>. This vector could be partially
+              mitigated by applying rate-limit to this traffic.</t>
+
+              <t>Has been exploited to perform Smurf attacks <xref
+              target="smurf"/>. A router could mitigate this by dropping ICMP
+              echor request messages directed to any of its directly-connected
+              subnets.</t>
+            </section>
+
+            <section title="Operational and Interoperability Impact if Blocked">
+              <t>Filtering this error message will break the ping tool. The
+              best current practice is to rate-limit this ICMP message.</t>
+            </section>
+          </section>
+
+          <section anchor="ICMPv4-req-echo-reply"
+                   title="Echo Reply Message (Type 0, code 0)">
+            <section title="Uses">
+              <t>Used by the ping troubleshooting tool.</t>
+            </section>
+
+            <section title="Message Specification">
+              <t>Defined in <xref target="RFC0792"/>.</t>
+
+              <t>Section 3.2.2.6 of <xref target="RFC1122"/> states that every
+              host MUST implement an ICMP Echo server function that receives
+              Echo Requests and sends corresponding Echo Replies. A host
+              SHOULD also implement an application-layer interface for sending
+              an Echo Request and receiving an Echo Reply, for diagnostic
+              purposes. Section 3.2.2.6 of <xref target="RFC1122"/> includes a
+              number of requirements for the processing of ICMP Echo messages
+              and the generation of the corresponding replies.</t>
+
+              <t>Section 4.3.3.6 of <xref target="RFC1812"/> contains a number
+              of requirements with respect to the generation and processing of
+              ICMP Echo or Echo Reply messsages, including: maximum ICMP
+              message size all routers are required to receive, a number of
+              factors that may determine whether a router responds (or not) to
+              an ICMP Echo message, the implementation of a
+              user/application-layer interface, and the processing of Record
+              Route, Timestamp and/or Source Route options that might be
+              present in an ICMP Echo message.</t>
+            </section>
+
+            <section title="Threats">
+              <t>Can be used for network mapping <xref
+              target="icmp-scanning"/>. Has been exploited to perform Smurf
+              attacks <xref target="smurf"/>.</t>
+            </section>
+
+            <section title="Operational and Interoperability Impact if Blocked">
+              <t>Filtering this error message will break the ping tool. The
+              best current practice is to rate-limit this ICMP message.</t>
+            </section>
+          </section>
+        </section>
+
+        <section anchor="ICMPv4-req-router"
+                 title="Router Solicitation or Router Advertisement message">
+          <section anchor="ICMPv4-req-router-sol"
+                   title="Router Solicitation Message (type 10, code 0)">
+            <section title="Uses">
+              <t>Used by some systems as form of stateless autoconfiguration,
+              to solicit routers on a network segment.</t>
+            </section>
+
+            <section title="Message Specification">
+              <t>Defined in <xref target="RFC1256"/></t>
+
+              <t>Section 4.3.3.10 of <xref target="RFC1812"/> states that an
+              IP router MUST support the router part of the ICMP Router
+              Discovery Protocol on all connected networks on which the router
+              supports either IP multicast or IP broadcast addressing. The
+              implementation MUST include all the configuration variables
+              specified for routers, with the specified defaults.</t>
+            </section>
+
+            <section title="Threats">
+              <t>Can be used for network mapping (e.g., learning about routers
+              on a network segment.).</t>
+            </section>
+
+            <section title="Operational and Interoperability Impact if Blocked">
+              <t>This mesages should not be routed. Therefore, there is no
+              operational/interoperability impact if blocked.</t>
+            </section>
+          </section>
+
+          <section anchor="ICMPv4-req-router-adv"
+                   title="Router Advertisement Message (type 9, code 0)">
+            <section title="Uses">
+              <t>Used to advertise routers on a network segment.</t>
+            </section>
+
+            <section title="Message Specification">
+              <t>Defined in <xref target="RFC1256"/></t>
+
+              <t>Section 4.3.3.10 of <xref target="RFC1812"/> states that an
+              IP router MUST support the router part of the ICMP Router
+              Discovery Protocol on all connected networks on which the router
+              supports either IP multicast or IP broadcast addressing. The
+              implementation MUST include all the configuration variables
+              specified for routers, with the specified defaults.</t>
+            </section>
+
+            <section title="Threats">
+              <t>Can be spoofed by an attacker to direct all traffic sent on a
+              network segment to itself and/or to perform a DoS attack.</t>
+            </section>
+
+            <section title="Operational and Interoperability Impact if Blocked">
+              <t>This mesages should not be routed. Therefore, there is no
+              operational/interoperability impact if blocked.</t>
+            </section>
+          </section>
+        </section>
+
+        <section anchor="ICMPv4-req-timestamp"
+                 title="Timestamp or Timestamp Reply Message">
+          <section anchor="ICMPv4-req-timestamp-message"
+                   title="Timestamp Message (type 13, code 0)">
+            <section title="Uses">
+              <t>May be used as a fall-back mechanism when NTP fails (?).</t>
+            </section>
+
+            <section title="Message Specification">
+              <t>Defined in <xref target="RFC0792"/>.</t>
+
+              <t>Section 3.2.2.8 of <xref target="RFC1122"/> states that a
+              host MAY implement Timestamp and Timestamp Reply. For hosts that
+              implement these messages, a number of requirements are
+              stated.</t>
+            </section>
+
+            <section title="Threats">
+              <t>Can be used for network mapping, and device
+              fingerprinting.</t>
+            </section>
+
+            <section title="Operational and Interoperability Impact if Blocked">
+              <t>None.</t>
+            </section>
+          </section>
+
+          <section anchor="ICMPv4-req-timestamp-reply"
+                   title="Timestamp Reply Message (type 14, code 0)">
+            <section title="Uses">
+              <t>May be used as a fall-back mechanism when NTP fails (?).</t>
+            </section>
+
+            <section title="Message Specification">
+              <t>Defined in <xref target="RFC0792"/>.</t>
+            </section>
+
+            <section title="Threats">
+              <t>Can be used for network mapping and device
+              fingerprinting.</t>
+            </section>
+
+            <section title="Operational and Interoperability Impact if Blocked">
+              <t>Systems will not be able to use ICMP timestamps as a fall-bak
+              mechanism when NTP fails.</t>
+            </section>
+          </section>
+        </section>
+
+        <section anchor="ICMPv4-info"
+                 title="Information Request or Information Reply Message (Deprecated)">
+          <t>These messages are described in <xref target="RFC0792"/> as "a
+          way for a host to find out the number of the network it is on".
+          Section 3.2.2.7 of <xref target="RFC1122"/> and Section 4.3.3.7 of
+          <xref target="RFC1812"/> deprecate the use of these messages.</t>
+
+          <section anchor="ICMPv4-info-message"
+                   title="Information Request Message (type 15, code 0)">
+            <section title="Uses">
+              <t>These messages originally provided a basic and simple
+              mechanism for dynamic host configuration. However, they have
+              been deprecated.</t>
+            </section>
+
+            <section title="Message Specification">
+              <t>Defined in <xref target="RFC0792"/>.</t>
+
+              <t>These messages are described in <xref target="RFC0792"/> as
+              "a way for a host to find out the number of the network it is
+              on". Section 3.2.2.7 of <xref target="RFC1122"/> and Section
+              4.3.3.7 of <xref target="RFC1812"/> deprecate the use of these
+              messages.</t>
+            </section>
+
+            <section title="Threats">
+              <t>Allows for OS (Operating Sytem) and device fingerprintng.
+              Since this messages have been deprecated, the best possible
+              mitigation is to not generate and to drop any received
+              Information Request messages.</t>
+            </section>
+
+            <section title="Operational and Interoperability Impact if Blocked">
+              <t>None.</t>
+            </section>
+          </section>
+
+          <section anchor="ICMPv4-info-reply"
+                   title="Information Reply Message (type 16, code 0)">
+            <section title="Uses">
+              <t>These messages originally provided a basic and simple
+              mechanism for dynamic host configuration. However, they have
+              been deprecated.</t>
+            </section>
+
+            <section title="Message Specification">
+              <t>Defined in <xref target="RFC0792"/>.</t>
+
+              <t>These messages are described in <xref target="RFC0792"/> as
+              "a way for a host to find out the number of the network it is
+              on". Section 3.2.2.7 of <xref target="RFC1122"/> and Section
+              4.3.3.7 of <xref target="RFC1812"/> deprecate the use of these
+              messages.</t>
+            </section>
+
+            <section title="Threats">
+              <t>Allow for OS and device fingerprintng.</t>
+            </section>
+
+            <section title="Operational and Interoperability Impact if Blocked">
+              <t>None.</t>
+            </section>
+          </section>
+        </section>
+
+        <section anchor="ICMPv4-mask"
+                 title="Address Mask Request or Address Mask Reply">
+          <section anchor="ICMPv4-mask-request"
+                   title="Address Mask Request (type 17, code 0)">
+            <section title="Uses">
+              <t>Was originally defined as a means for system stateless
+              autoconfiguration (to look-up the address mask).</t>
+            </section>
+
+            <section title="Message Specification">
+              <t>Defined in RFC0950. Section 3.2.2.9 of <xref
+              target="RFC1122"/> includes a number of requirements regarding
+              the generation and processing of this message.</t>
+
+              <t>Section 3.2.2.9 of <xref target="RFC1122"/> states that a
+              host MAY implement sending ICMP Address Mask Request(s) and
+              receiving ICMP Address Mask Reply(s). Section 4.3.3.9 of <xref
+              target="RFC1812"/> states that a router MUST implement support
+              for receiving ICMP Address Mask Request messages and responding
+              with ICMP Address Mask Reply messages.</t>
+            </section>
+
+            <section title="Threats">
+              <t>Can be used for network mapping, and OS fingerprinting.</t>
+            </section>
+
+            <section title="Operational and Interoperability Impact if Blocked">
+              <t>None.</t>
+            </section>
+          </section>
+
+          <section anchor="ICMPv4-mask-reply"
+                   title="Address Mask Reply (type 18, code 0)">
+            <section title="Uses">
+              <t>Was originally defined as a means for system stateless
+              autoconfiguration (to allow systems to dynamically obtain the
+              address mask). While they have not been deprecated, they are not
+              used in practice.</t>
+            </section>
+
+            <section title="Message Specification">
+              <t>Defined in RFC0950. Section 3.2.2.9 of <xref
+              target="RFC1122"/> includes a number of requirements regarding
+              the generation and processing of this message.</t>
+
+              <t>Section 3.2.2.9 of <xref target="RFC1122"/> states that a
+              host MAY implement sending ICMP Address Mask Request(s) and
+              receiving ICMP Address Mask Reply(s). Section 4.3.3.9 of <xref
+              target="RFC1812"/> states that a router MUST implement support
+              for receiving ICMP Address Mask Request messages and responding
+              with ICMP Address Mask Reply messages.</t>
+            </section>
+
+            <section title="Threats">
+              <t>Can be used for network mapping, and OS fingerprinting.</t>
+            </section>
+
+            <section title="Operational and Interoperability Impact if Blocked">
+              <t>None.</t>
+            </section>
+          </section>
+        </section>
+      </section>
+    </section>
+
+    <section anchor="ICMPv6"
+             title="Internet Control Message Protocol version 6 (ICMPv6)">
+      <t><xref target="table-icmpv6"/> summarizes the recommendations with
+      respect to what a device SHOULD do when generating, forwarding, or
+      receiving ICMPv6.</t>
+
+      <texttable anchor="table-icmpv6" style="all"
+                 title="Summary Recommendations for ICMPv6">
+        <ttcol align="center">ICMPv6 Message</ttcol>
+
+        <ttcol align="center">Sourced from Device</ttcol>
+
+        <ttcol align="center">Through Device</ttcol>
+
+        <ttcol align="center">Destined to Device</ttcol>
+
+        <c>ICMPv6-unreach</c>
+
+        <c>N/A</c>
+
+        <c>N/A</c>
+
+        <c>N/A</c>
+
+        <c>ICMPv6-unreach-no-route</c>
+
+        <c>Rate-L</c>
+
+        <c>Permit</c>
+
+        <c>Rate-L</c>
+
+        <c>ICMPv6-unreach-admin-prohibited</c>
+
+        <c>Rate-L</c>
+
+        <c>Permit</c>
+
+        <c>Rate-L</c>
+
+        <c>ICMPv6-unreach-beyond-scope</c>
+
+        <c>Rate-L</c>
+
+        <c>Deny</c>
+
+        <c>Rate-L</c>
+
+        <c>ICMPv6-unreach-addr</c>
+
+        <c>Rate-L</c>
+
+        <c>Permit</c>
+
+        <c>Rate-L</c>
+
+        <c>ICMPv6-unreach-port</c>
+
+        <c>Rate-L</c>
+
+        <c>Permit</c>
+
+        <c>Rate-L</c>
+
+        <c>ICMPv6-unreach-source-addr</c>
+
+        <c>Rate-L</c>
+
+        <c>Deny</c>
+
+        <c>Rate-L</c>
+
+        <c>ICMPv6-unreach-reject-route</c>
+
+        <c>Rate-L</c>
+
+        <c>Permit</c>
+
+        <c>Rate-L</c>
+
+        <c>ICMPv6-too-big</c>
+
+        <c>Send</c>
+
+        <c>Permit</c>
+
+        <c>Rate-L</c>
+
+        <c>ICMPv6-timed</c>
+
+        <c>N/A</c>
+
+        <c>N/A</c>
+
+        <c>N/A</c>
+
+        <c>ICMPv6-timed-hop-limit</c>
+
+        <c>Send</c>
+
+        <c>Permit</c>
+
+        <c>Rate-L</c>
+
+        <c>ICMPv6-timed-reass</c>
+
+        <c>Send</c>
+
+        <c>Permit</c>
+
+        <c>Rate-L</c>
+
+        <c>ICMPv6-parameter</c>
+
+        <c>Rate-L</c>
+
+        <c>Permit</c>
+
+        <c>Rate-L</c>
+
+        <c>ICMPv6-parameter-err-header</c>
+
+        <c>Rate-L</c>
+
+        <c>Deny</c>
+
+        <c>Rate-L</c>
+
+        <c>ICMPv6-parameter-unrec-header</c>
+
+        <c>Rate-L</c>
+
+        <c>Deny</c>
+
+        <c>Rate-L</c>
+
+        <c>ICMPv6-parameter-unrec-option</c>
+
+        <c>Rate-L</c>
+
+        <c>Permit</c>
+
+        <c>Rate-L</c>
+
+        <c>ICMPv6-err-private-exp-100</c>
+
+        <c>Send</c>
+
+        <c>Deny</c>
+
+        <c>Rate-L</c>
+
+        <c>ICMPv6-err-private-exp-101</c>
+
+        <c>Send</c>
+
+        <c>Deny</c>
+
+        <c>Rate-L</c>
+
+        <c>ICMPv6-err-expansion</c>
+
+        <c>Send</c>
+
+        <c>Permit</c>
+
+        <c>Rate-L</c>
+
+        <c>ICMPv6-echo-message</c>
+
+        <c>Send</c>
+
+        <c>Permit</c>
+
+        <c>Rate-L</c>
+
+        <c>ICMPv6-echo-reply</c>
+
+        <c>Send</c>
+
+        <c>Permit</c>
+
+        <c>Rate-L</c>
+
+        <c>ICMPv6-info-private-exp-200</c>
+
+        <c>Send</c>
+
+        <c>Deny</c>
+
+        <c>Rate-L</c>
+
+        <c>ICMPv6-info-private-exp-201</c>
+
+        <c>Send</c>
+
+        <c>Deny</c>
+
+        <c>Rate-L</c>
+
+        <c>ICMPv6-info-expansion</c>
+
+        <c>Send</c>
+
+        <c>Permit</c>
+
+        <c>Rate-L</c>
+
+        <postamble>Legend: "Rate-L" = Rate-Limit</postamble>
+      </texttable>
+
+      <section anchor="ICMPv6-errors" title="ICMPv6 Error Messages">
+        <t>The ICMPv6 specification leaves it up to the implementation the
+        reaction to ICMP error messages. Therefore, the ICMP attacks described
+        in <xref target="RFC5927"/> might or might not be effective.</t>
+
+        <section anchor="ICMPv6-unreach"
+                 title="Destination Unreachable (Type 1)">
+          <section anchor="ICMPv6-unreach-no-route"
+                   title="No route to destination (code 0)">
+            <section title="Uses">
+              <t>Used to indicate that the ofending packet cannot be delivered
+              because there is no route towords the destination address. A
+              number of systems abort connections in non-synchronized states
+              in response to this message, to avoid long delays in connection
+              establishment attempts <xref target="RFC5461"/>.</t>
+            </section>
+
+            <section title="Message Specification">
+              <t>Defined in <xref target="RFC4443"/>.</t>
+            </section>
+
+            <section title="Threats">
+              <t>An attacker can potentially perform a Denial of Service (DoS)
+              attack against the router by forcing it to generate a high
+              volume of ICMP Destination Unreachable messages. This can be
+              done by flooding the router with packets which the attacker
+              knows will result in the router spending resources in generating
+              a high volume of ICMPv6 messages. This can be mitigated by
+              rate-limiting the rate of ICMPv6 messages generated. For
+              rate-limiting ICMPv6 messages see Section 2.4, paragraph (f), of
+              <xref target="RFC4443"/>.</t>
+            </section>
+
+            <section title="Operational and Interoperability Impact if Blocked">
+              <t>May lead to long delays between connection establishment
+              attempts or long response times that could have been avoided by
+              aborting non-synchronized connections in response to ICMP soft
+              errors <xref target="RFC5461"/>.</t>
+            </section>
+          </section>
+
+          <section anchor="ICMPv6-unreach-admin-prohibited"
+                   title="Communication with destination administratively prohibited (code 1)">
+            <section title="Uses">
+              <t>A number of systems abort connections in non-synchronized
+              states in response to this message, to avoid long delays in
+              connection establishment attempts <xref target="RFC5461"/>.</t>
+            </section>
+
+            <section title="Message Specification">
+              <t>Defined in <xref target="RFC4443"/>.</t>
+            </section>
+
+            <section title="Threats">
+              <t>May reveal filtering policies.</t>
+
+              <t>An attacker can potentially perform a Denial of Service (DoS)
+              attack against the router by forcing it to generate a high
+              volume of ICMP Destination Unreachable messages. This can be
+              done by flooding the router with packets which the attacker
+              knows will result in the router spending resources in generating
+              a high volume of ICMPv6 messages. This can be mitigated by
+              rate-limiting the rate of ICMPv6 messages generated. For
+              rate-limiting ICMPv6 messages see Section 2.4, paragraph (f), of
+              <xref target="RFC4443"/>.</t>
+            </section>
+
+            <section title="Operational and Interoperability Impact if Blocked">
+              <t>May lead to long delays between connection establishment
+              attempts or long response times that could have been avoided by
+              aborting non-synchronized connections in response to ICMP soft
+              errors <xref target="RFC5461"/>.</t>
+            </section>
+          </section>
+
+          <section anchor="ICMPv6-unreach-beyond-scope"
+                   title="Beyond scope of source address (code 2)">
+            <section title="Uses">
+              <t>A number of systems abort connections in non-synchronized
+              states in response to this message, to avoid long delays in
+              connection establishment attempts <xref target="RFC5461"/>.</t>
+            </section>
+
+            <section title="Message Specification">
+              <t>Defined in <xref target="RFC4443"/>.</t>
+            </section>
+
+            <section title="Threats">
+              <t/>
+            </section>
+
+            <section title="Operational and Interoperability Impact if Blocked">
+              <t>May lead to long delays between connection establishment
+              attempts or long response times that could have been avoided by
+              aborting non-synchronized connections in response to ICMP soft
+              errors <xref target="RFC5461"/>.</t>
+            </section>
+          </section>
+
+          <section anchor="ICMPv6-unreach-addr"
+                   title="Address unreachable (code 3)">
+            <section title="Uses">
+              <t>A number of systems abort connections in non-synchronized
+              states in response to this message, to avoid long delays in
+              connection establishment attempts <xref target="RFC5461"/>.</t>
+            </section>
+
+            <section title="Message Specification">
+              <t>Defined in <xref target="RFC4443"/>.</t>
+            </section>
+
+            <section title="Threats">
+              <t>An attacker can potentially perform a Denial of Service (DoS)
+              attack against the router by forcing it to generate a high
+              volume of ICMPv6 Destination Unreachable messages. This can be
+              done by flooding the router with packets which the attacker
+              knows will result in the router spending resources in generating
+              a high volume of ICMPv6 messages. This can be mitigated by
+              rate-limiting the rate of ICMPv6 messages generated. For
+              rate-limiting ICMPv6 messages see Section 2.4, paragraph (f), of
+              <xref target="RFC4443"/>.</t>
+            </section>
+
+            <section title="Operational and Interoperability Impact if Blocked">
+              <t>May lead to long delays between connection establishment
+              attempts or long response times that could have been avoided by
+              aborting non-synchronized connections in response to ICMP soft
+              errors <xref target="RFC5461"/>.</t>
+            </section>
+          </section>
+
+          <section anchor="ICMPv6-unreach-port"
+                   title="Port unreachable (code 4)">
+            <section title="Uses">
+              <t>Used to identicate that there is no listening process on the
+              target transport protocol port.</t>
+            </section>
+
+            <section title="Message Specification">
+              <t>Defined in <xref target="RFC4443"/>.</t>
+            </section>
+
+            <section title="Threats">
+              <t>This error message might used to perform Denial of Service
+              (DoS) attacks against transport protocols. <xref
+              target="RFC5927"/> describes the use of this error message to
+              attack TCP connections.</t>
+
+              <t>An attacker can potentially perform a Denial of Service (DoS)
+              attack against the router by forcing it to generate a high
+              volume of ICMPv6 Destination Unreachable messages. This can be
+              done by flooding the router with packets which the attacker
+              knows will result in the router spending resources in generating
+              a high volume of ICMPv6 messages. This can be mitigated by
+              rate-limiting the rate of ICMPv6 messages generated. For
+              rate-limiting ICMPv6 messages see Section 2.4, paragraph (f), of
+              <xref target="RFC4443"/>.</t>
+            </section>
+
+            <section title="Operational and Interoperability Impact if Blocked">
+              <t>May lead to long delays between connection establishment
+              attempts or long response times that could have been avoided by
+              aborting non-synchronized connections in response to ICMP soft
+              errors <xref target="RFC5461"/>.</t>
+            </section>
+          </section>
+
+          <section anchor="ICMPv6-unreach-source-addr"
+                   title="Source address failed ingress/egress policy (code 5)">
+            <section title="Uses">
+              <t>A number of systems abort connections in non-synchronized
+              states in response to this message, to avoid long delays in
+              connection establishment attempts <xref target="RFC5461"/>.</t>
+            </section>
+
+            <section title="Message Specification">
+              <t>Defined in <xref target="RFC4443"/>.</t>
+            </section>
+
+            <section title="Threats">
+              <t>May reveal filtering policies.</t>
+
+              <t>An attacker can potentially perform a Denial of Service (DoS)
+              attack against the router by forcing it to generate a high
+              volume of ICMP Destination Unreachable messages. This can be
+              done by flooding the router with packets which the attacker
+              knows will result in the router spending resources in generating
+              a high volume of ICMPv6 messages. This can be mitigated by
+              rate-limiting the rate of ICMPv6 messages generated. For
+              rate-limiting ICMPv6 messages see Section 2.4, paragraph (f), of
+              <xref target="RFC4443"/>.</t>
+            </section>
+
+            <section title="Operational and Interoperability Impact if Blocked">
+              <t>May lead to long delays between connection establishment
+              attempts or long response times that could have been avoided by
+              aborting non-synchronized connections in response to ICMP soft
+              errors <xref target="RFC5461"/>.</t>
+            </section>
+          </section>
+
+          <section anchor="ICMPv6-unreach-reject-route"
+                   title="Reject route to destination (code 6)">
+            <section title="Uses">
+              <t>A number of systems abort connections in non-synchronized
+              states in response to this message, to avoid long delays in
+              connection establishment attempts <xref target="RFC5461"/>.</t>
+            </section>
+
+            <section title="Message Specification">
+              <t>Defined in <xref target="RFC4443"/>.</t>
+            </section>
+
+            <section title="Threats">
+              <t>An attacker can potentially perform a Denial of Service (DoS)
+              attack against the router by forcing it to generate a high
+              volume of ICMP Destination Unreachable messages. This can be
+              done by flooding the router with packets which the attacker
+              knows will result in the router spending resources in generating
+              a high volume of ICMPv6 messages. This can be mitigated by
+              rate-limiting the rate of ICMPv6 messages generated. For
+              rate-limiting ICMPv6 messages see Section 2.4, paragraph (f), of
+              <xref target="RFC4443"/>.</t>
+            </section>
+
+            <section title="Operational and Interoperability Impact if Blocked">
+              <t>May lead to long delays between connection establishment
+              attempts or long response times that could have been avoided by
+              aborting non-synchronized connections in response to ICMP soft
+              errors <xref target="RFC5461"/>.</t>
+            </section>
+          </section>
+        </section>
+
+        <section anchor="ICMPv6-too-big"
+                 title="Packet Too Big Message (Type 2, code 0)">
+          <section title="Uses">
+            <t>Used for the Path-MTU discovery mechanism for IPv6 defined in
+            <xref target="RFC1981"/>.</t>
+          </section>
+
+          <section title="Message Specification">
+            <t>Defined in <xref target="RFC4443"/>.</t>
+          </section>
+
+          <section title="Threats">
+            <t>This error message can be used to perform Denial of Service
+            (DoS) attacks against transport protocols. <xref
+            target="RFC5927"/> describes the use of this error message to
+            attack TCP connections.</t>
+          </section>
+
+          <section title="Operational and Interoperability Impact if Blocked">
+            <t>Filtering this error message will break the Path-MTU Discovery
+            mechanism defined in <xref target="RFC1981"/>, which could lead to
+            a Denial of Service (unless the sending node implements some for
+            of Path-MTU blackhole detection).</t>
+          </section>
+        </section>
+
+        <section anchor="ICMPv6-timed" title="Time Exceeded Message (Type 3)">
+          <section anchor="ICMPv6-timed-hop-limit"
+                   title="Hop limit exceeded in transit (code 0)">
+            <section title="Uses">
+              <t>A number of systems abort connections in non-synchronized
+              states in response to this message, to avoid long delays in
+              connection establishment attempts <xref target="RFC5461"/>.</t>
+            </section>
+
+            <section title="Message Specification">
+              <t>Defined in <xref target="RFC4443"/>.</t>
+            </section>
+
+            <section title="Threats">
+              <t>May be used for network mapping.</t>
+            </section>
+
+            <section title="Operational and Interoperability Impact if Blocked">
+              <t>May lead to long delays between connection establishment
+              attempts or long response times that could have been avoided by
+              aborting non-synchronized connections in response to ICMP soft
+              errors <xref target="RFC5461"/>.</t>
+            </section>
+          </section>
+
+          <section anchor="ICMPv6-timed-reass"
+                   title="Fragment reassembly time exceeded (code 1)">
+            <section title="Uses">
+              <t>Used to signal a timeout in fragment reassembly. A number of
+              systems abort connections in non-synchronized states in response
+              to this message, to avoid long delays in connection
+              establishment attempts <xref target="RFC5461"/>.</t>
+            </section>
+
+            <section title="Message Specification">
+              <t>Defined in <xref target="RFC4443"/>.</t>
+            </section>
+
+            <section title="Threats">
+              <t>May reveal the timeout value used by a system for fragment
+              reassembly, and thus help to perform remote OS fingerprinting.
+              Additionally, revealing the fragment reassembly timeout value
+              may help an attacker to evade a NIDS.</t>
+            </section>
+
+            <section title="Operational and Interoperability Impact if Blocked">
+              <t>May lead to long delays between connection establishment
+              attempts or long response times that could have been avoided by
+              aborting non-synchronized connections in response to ICMP soft
+              errors <xref target="RFC5461"/>.</t>
+            </section>
+          </section>
+        </section>
+
+        <section anchor="ICMPv6-parameter"
+                 title="Parameter Problem Message (Type 4)">
+          <section anchor="ICMPv6-parameter-err-header"
+                   title="Erroneous header field encountered (code 0)">
+            <section title="Uses">
+              <t>A number of systems abort connections in non-synchronized
+              states in response to this message, to avoid long delays in
+              connection establishment attempts <xref target="RFC5461"/>.</t>
+            </section>
+
+            <section title="Message Specification">
+              <t>Defined in <xref target="RFC4443"/>.</t>
+            </section>
+
+            <section title="Threats">
+              <t>This error message might used to perform Denial of Service
+              (DoS) attacks against transport protocols. <xref
+              target="RFC5927"/> describes the use of this error message to
+              attack TCP connections.</t>
+
+              <t>An attacker can potentially perform a Denial of Service (DoS)
+              attack against the router by forcing it to generate a high
+              volume of ICMP Parameter Problem messages. This can be done by
+              flooding the router with packets which the attacker knows will
+              result in the router spending resources in generating a high
+              volume of ICMPv6 messages. This can be mitigated by
+              rate-limiting the rate of ICMPv6 messages generated. For
+              rate-limiting ICMPv6 messages see Section 2.4, paragraph (f), of
+              <xref target="RFC4443"/>.</t>
+            </section>
+
+            <section title="Operational and Interoperability Impact if Blocked">
+              <t>May lead to long delays between connection establishment
+              attempts or long response times that could have been avoided by
+              aborting non-synchronized connections in response to ICMP soft
+              errors <xref target="RFC5461"/>.</t>
+            </section>
+          </section>
+
+          <section anchor="ICMPv6-parameter-unrec-header"
+                   title="Unrecognized Next Header type encountered (code 1)">
+            <section title="Uses">
+              <t>A number of systems abort connections in non-synchronized
+              states in response to this message, to avoid long delays in
+              connection establishment attempts <xref target="RFC5461"/>.</t>
+            </section>
+
+            <section title="Message Specification">
+              <t>Defined in <xref target="RFC4443"/>.</t>
+            </section>
+
+            <section title="Threats">
+              <t>This error message might used to perform Denial of Service
+              (DoS) attacks against transport protocols. <xref
+              target="RFC5927"/> describes the use of this error message to
+              attack TCP connections.</t>
+
+              <t>An attacker can potentially perform a Denial of Service (DoS)
+              attack against the router by forcing it to generate a high
+              volume of ICMP Parameter Problem messages. This can be done by
+              flooding the router with packets which the attacker knows will
+              result in the router spending resources in generating a high
+              volume of ICMPv6 messages. This can be mitigated by
+              rate-limiting the rate of ICMPv6 messages generated. For
+              rate-limiting ICMPv6 messages see Section 2.4, paragraph (f), of
+              <xref target="RFC4443"/>.</t>
+            </section>
+
+            <section title="Operational and Interoperability Impact if Blocked">
+              <t>May lead to long delays between connection establishment
+              attempts or long response times that could have been avoided by
+              aborting non-synchronized connections in response to ICMP soft
+              errors <xref target="RFC5461"/>.</t>
+            </section>
+          </section>
+
+          <section anchor="ICMPv6-parameter-unrec-option"
+                   title="Unrecognized IPv6 option encountered (code 2)">
+            <section title="Uses">
+              <t>A number of systems abort connections in non-synchronized
+              states in response to this message, to avoid long delays in
+              connection establishment attempts <xref target="RFC5461"/>.</t>
+            </section>
+
+            <section title="Message Specification">
+              <t>Defined in <xref target="RFC4443"/>.</t>
+            </section>
+
+            <section title="Threats">
+              <t>An attacker can potentially perform a Denial of Service (DoS)
+              attack against the router by forcing it to generate a high
+              volume of ICMP Parameter Problem messages. This can be done by
+              flooding the router with packets which the attacker knows will
+              result in the router spending resources in generating a high
+              volume of ICMPv6 messages. This can be mitigated by
+              rate-limiting the rate of ICMPv6 messages generated. For
+              rate-limiting ICMPv6 messages see Section 2.4, paragraph (f), of
+              <xref target="RFC4443"/>.</t>
+            </section>
+
+            <section title="Operational and Interoperability Impact if Blocked">
+              <t>May lead to long delays between connection establishment
+              attempts or long response times that could have been avoided by
+              aborting non-synchronized connections in response to ICMP soft
+              errors <xref target="RFC5461"/>.</t>
+            </section>
+          </section>
+        </section>
+
+        <section anchor="ICMPv6-err-private-exp-100"
+                 title="Private experimentation (Type 100)">
+          <section title="Uses">
+            <t>Used for performing controlled experiments with ICMPv6 messages
+            before a specific ICMPv6 type is formally assigned by IANA.</t>
+          </section>
+
+          <section title="Message Specification">
+            <t>Defined in <xref target="RFC4443"/>.</t>
+          </section>
+
+          <section title="Threats">
+            <t>The security implications of this message type will depend on
+            the specific experiment the message is being used for and whether
+            the node this message is destined to implements the aforementioned
+            "experiment".</t>
+          </section>
+
+          <section title="Operational and Interoperability Impact if Blocked">
+            <t>None (this message type is meant for experimentation rather
+            than "production").</t>
+          </section>
+        </section>
+
+        <section anchor="ICMPv6-err-private-exp-101"
+                 title="Private experimentation (Type 101)">
+          <section title="Uses">
+            <t>Used for performing controlled experiments with ICMPv6 messages
+            before a specific ICMPv6 type is formally assigned by IANA.</t>
+          </section>
+
+          <section title="Message Specification">
+            <t>Defined in <xref target="RFC4443"/>.</t>
+          </section>
+
+          <section title="Threats">
+            <t>The security implications of this message type will depend on
+            the specific experiment the message is being used for and whether
+            the node this message is destined to implements the aforementioned
+            "experiment".</t>
+          </section>
+
+          <section title="Operational and Interoperability Impact if Blocked">
+            <t>None (this message type is meant for controlled experimentation
+            rather than "production").</t>
+          </section>
+        </section>
+
+        <section anchor="ICMPv6-err-expansion"
+                 title="Reserved for expansion of ICMPv6 error messages (Type 127)">
+          <section title="Uses">
+            <t>Type value 127 is reserved for future expansion of the type
+            value range if there is a shortage in the future.</t>
+          </section>
+
+          <section title="Message Specification">
+            <t>Defined in <xref target="RFC4443"/>.</t>
+          </section>
+
+          <section title="Threats">
+            <t>None.</t>
+          </section>
+
+          <section title="Operational and Interoperability Impact if Blocked">
+            <t>It would prevent expansion of the type value range, and hence
+            prevent extension of the ICMPv6 protocol.</t>
+          </section>
+        </section>
+      </section>
+
+      <section anchor="ICMPv6-info" title="ICMPv6 Informational messages">
+        <section anchor="ICMPv6-echo"
+                 title="Echo Request or Echo Reply Message">
+          <section anchor="ICMPv6-echo-message"
+                   title="Echo Request message (type 128, code 0)">
+            <section title="Uses">
+              <t>Used by the ping tool to test reachability.</t>
+            </section>
+
+            <section title="Message Specification">
+              <t>Defined in <xref target="RFC4443"/>.</t>
+            </section>
+
+            <section title="Threats">
+              <t>Can be used for network mapping <xref
+              target="icmp-scanning"/> and for performing Smurf DoS attacks
+              <xref target="smurf"/>.</t>
+            </section>
+
+            <section title="Operational and Interoperability Impact if Blocked">
+              <t>Filtering this error message will break the ping tool. The
+              best current practice is to rate-limit this ICMP message.</t>
+            </section>
+          </section>
+
+          <section anchor="ICMPv6-echo-reply"
+                   title="Echo reply message (Type 129, code 0)">
+            <section title="Uses">
+              <t>Used by the ping tool to test reachability.</t>
+            </section>
+
+            <section title="Message Specification">
+              <t>Defined in <xref target="RFC4443"/>.</t>
+            </section>
+
+            <section title="Threats">
+              <t>Can be used for network mapping <xref
+              target="icmp-scanning"/> and for performing Smurf DoS attacks
+              <xref target="smurf"/>.</t>
+            </section>
+
+            <section title="Operational and Interoperability Impact if Blocked">
+              <t>Filtering this error message will break the ping tool. The
+              best current practice is to rate-limit this ICMP message.</t>
+            </section>
+          </section>
+        </section>
+
+<!--
+
+TODO:
+
+130   Multicast Listener Query                         [RFC2710]
+131   Multicast Listener Report                        [RFC2710]
+132   Multicast Listener Done                          [RFC2710]
+133   Router Solicitation                              [RFC4861]
+134   Router Advertisement                             [RFC4861]
+135   Neighbor Solicitation                            [RFC4861]
+136   Neighbor Advertisement                           [RFC4861]
+137   Redirect Message                                 [RFC4861]
+138   Router Renumbering                               [Crawford]
+139   ICMP Node Information Query                      [RFC4620]
+140   ICMP Node Information Response                   [RFC4620]
+141   Inverse Neighbor Discovery Solicitation Message  [RFC3122]
+142   Inverse Neighbor Discovery Advertisement Message [RFC3122]
+143   Version 2 Multicast Listener Report              [RFC3810]       
+144   Home Agent Address Discovery Request Message     [RFC6275]
+145   Home Agent Address Discovery Reply Message       [RFC6275]
+146   Mobile Prefix Solicitation                       [RFC6275]
+147   Mobile Prefix Advertisement                      [RFC6275]
+148   Certification Path Solicitation Message          [RFC3971]
+149   Certification Path Advertisement Message         [RFC3971]
+150   ICMP messages utilized by experimental           [RFC4065]
+      mobility protocols such as Seamoby
+151   Multicast Router Advertisement                   [RFC4286]
+152   Multicast Router Solicitation                    [RFC4286]
+153   Multicast Router Termination                     [RFC4286]
+154   FMIPv6 Messages                                  [RFC5568]
+155   RPL Control Message                              [RFC6550]
+
+-->
+
+
+<section title="Multicast Listener Discovery (MLD)">
+          <section anchor="Multicast-Listener-Query"
+                   title="Multicast Listener Query (Type 130)">
+            <section title="Uses">
+              <t></t>
+            </section>
+            <section title="Message Specification">
+              <t>Defined in <xref target="RFC2710"/>.</t>
+            </section>
+            <section title="Threats">
+              <t></t>
+            </section>
+            <section title="Operational and Interoperability Impact if Blocked">
+              <t></t>
+            </section>
+          </section>
+
+
+          <section anchor="Multicast-Listener-Report"
+                   title="Multicast Listener Report (Type 131)">
+            <section title="Uses">
+              <t></t>
+            </section>
+            <section title="Message Specification">
+              <t>Defined in <xref target="RFC2710"/>.</t>
+            </section>
+            <section title="Threats">
+              <t></t>
+            </section>
+            <section title="Operational and Interoperability Impact if Blocked">
+              <t></t>
+            </section>
+          </section>
+
+
+          <section anchor="Multicast-Listener-Done"
+                   title="Multicast Listener Done (Type 132)">
+            <section title="Uses">
+              <t></t>
+            </section>
+            <section title="Message Specification">
+              <t>Defined in <xref target="RFC2710"/>.</t>
+            </section>
+            <section title="Threats">
+              <t></t>
+            </section>
+            <section title="Operational and Interoperability Impact if Blocked">
+              <t></t>
+            </section>
+          </section>
+
+
+          <section anchor="Version-2-Multicast-Listener-Report"
+                   title="Version 2 Multicast Listener Report (Type 143)">
+            <section title="Uses">
+              <t></t>
+            </section>
+            <section title="Message Specification">
+              <t>Defined in <xref target="RFC3810"/>.</t>
+            </section>
+            <section title="Threats">
+              <t></t>
+            </section>
+            <section title="Operational and Interoperability Impact if Blocked">
+              <t></t>
+            </section>
+          </section>
+
+
+</section>
+
+<section title="Neighbor Discovery (ND)">
+          <section anchor="Router-Solicitation"
+                   title="Router Solicitation (Type 133)">
+            <section title="Uses">
+              <t></t>
+            </section>
+            <section title="Message Specification">
+              <t>Defined in <xref target="RFC4861"/>.</t>
+            </section>
+            <section title="Threats">
+              <t></t>
+            </section>
+            <section title="Operational and Interoperability Impact if Blocked">
+              <t></t>
+            </section>
+          </section>
+
+
+          <section anchor="Router-Advertisement"
+                   title="Router Advertisement (Type 134)">
+            <section title="Uses">
+              <t></t>
+            </section>
+            <section title="Message Specification">
+              <t>Defined in <xref target="RFC4861"/>.</t>
+            </section>
+            <section title="Threats">
+              <t></t>
+            </section>
+            <section title="Operational and Interoperability Impact if Blocked">
+              <t></t>
+            </section>
+          </section>
+
+
+          <section anchor="Neighbor-Solicitation"
+                   title="Neighbor Solicitation (Type 135)">
+            <section title="Uses">
+              <t></t>
+            </section>
+            <section title="Message Specification">
+              <t>Defined in <xref target="RFC4861"/>.</t>
+            </section>
+            <section title="Threats">
+              <t></t>
+            </section>
+            <section title="Operational and Interoperability Impact if Blocked">
+              <t></t>
+            </section>
+          </section>
+
+
+          <section anchor="Neighbor-Advertisement"
+                   title="Neighbor Advertisement (Type 136)">
+            <section title="Uses">
+              <t></t>
+            </section>
+            <section title="Message Specification">
+              <t>Defined in <xref target="RFC4861"/>.</t>
+            </section>
+            <section title="Threats">
+              <t></t>
+            </section>
+            <section title="Operational and Interoperability Impact if Blocked">
+              <t></t>
+            </section>
+          </section>
+
+
+          <section anchor="Redirect-Message"
+                   title="Redirect Message (Type 137)">
+            <section title="Uses">
+              <t></t>
+            </section>
+            <section title="Message Specification">
+              <t>Defined in <xref target="RFC4861"/>.</t>
+            </section>
+            <section title="Threats">
+              <t></t>
+            </section>
+            <section title="Operational and Interoperability Impact if Blocked">
+              <t></t>
+            </section>
+          </section>
+</section>
+
+
+          <section anchor="Router-Renumbering"
+                   title="Router Renumbering (Type 138)">
+            <section title="Uses">
+              <t></t>
+            </section>
+            <section title="Message Specification">
+              <t>Defined.</t>
+            </section>
+            <section title="Threats">
+              <t></t>
+            </section>
+            <section title="Operational and Interoperability Impact if Blocked">
+              <t></t>
+            </section>
+          </section>
+
+
+<section title="IPv6 Node Information Queries">
+          <section anchor="ICMP-Node-Information-Query"
+                   title="ICMP Node Information Query (Type 139)">
+            <section title="Uses">
+              <t></t>
+            </section>
+            <section title="Message Specification">
+              <t>Defined in <xref target="RFC4620"/>.</t>
+            </section>
+            <section title="Threats">
+              <t></t>
+            </section>
+            <section title="Operational and Interoperability Impact if Blocked">
+              <t></t>
+            </section>
+          </section>
+
+
+          <section anchor="ICMP-Node-Information-Response"
+                   title="ICMP Node Information Response (Type 140)">
+            <section title="Uses">
+              <t></t>
+            </section>
+            <section title="Message Specification">
+              <t>Defined in <xref target="RFC4620"/>.</t>
+            </section>
+            <section title="Threats">
+              <t></t>
+            </section>
+            <section title="Operational and Interoperability Impact if Blocked">
+              <t></t>
+            </section>
+          </section>
+</section>
+
+
+<section title="IPv6 ND Inverse Discovery">
+          <section anchor="Inverse-Neighbor-Discovery-Solicitation-Message"
+                   title="Inverse Neighbor Discovery Solicitation Message (Type 141)">
+            <section title="Uses">
+              <t></t>
+            </section>
+            <section title="Message Specification">
+              <t>Defined in <xref target="RFC3122"/>.</t>
+            </section>
+            <section title="Threats">
+              <t></t>
+            </section>
+            <section title="Operational and Interoperability Impact if Blocked">
+              <t></t>
+            </section>
+          </section>
+
+
+          <section anchor="Inverse-Neighbor-Discovery-Advertisement-Message"
+                   title="Inverse Neighbor Discovery Advertisement Message (Type 142)">
+            <section title="Uses">
+              <t></t>
+            </section>
+            <section title="Message Specification">
+              <t>Defined in <xref target="RFC3122"/>.</t>
+            </section>
+            <section title="Threats">
+              <t></t>
+            </section>
+            <section title="Operational and Interoperability Impact if Blocked">
+              <t></t>
+            </section>
+          </section>
+</section>
+
+
+<section title="Mobility">
+          <section anchor="Home-Agent-Address-Discovery-Request-Message"
+                   title="Home Agent Address Discovery Request Message (Type 144)">
+            <section title="Uses">
+              <t></t>
+            </section>
+            <section title="Message Specification">
+              <t>Defined in <xref target="RFC6275"/>.</t>
+            </section>
+            <section title="Threats">
+              <t></t>
+            </section>
+            <section title="Operational and Interoperability Impact if Blocked">
+              <t></t>
+            </section>
+          </section>
+
+
+          <section anchor="Home-Agent-Address-Discovery-Reply-Message"
+                   title="Home Agent Address Discovery Reply Message (Type 145)">
+            <section title="Uses">
+              <t></t>
+            </section>
+            <section title="Message Specification">
+              <t>Defined in <xref target="RFC6275"/>.</t>
+            </section>
+            <section title="Threats">
+              <t></t>
+            </section>
+            <section title="Operational and Interoperability Impact if Blocked">
+              <t></t>
+            </section>
+          </section>
+
+
+          <section anchor="Mobile-Prefix-Solicitation"
+                   title="Mobile Prefix Solicitation (Type 146)">
+            <section title="Uses">
+              <t></t>
+            </section>
+            <section title="Message Specification">
+              <t>Defined in <xref target="RFC6275"/>.</t>
+            </section>
+            <section title="Threats">
+              <t></t>
+            </section>
+            <section title="Operational and Interoperability Impact if Blocked">
+              <t></t>
+            </section>
+          </section>
+
+
+          <section anchor="Mobile-Prefix-Advertisement"
+                   title="Mobile Prefix Advertisement (Type 147)">
+            <section title="Uses">
+              <t></t>
+            </section>
+            <section title="Message Specification">
+              <t>Defined in <xref target="RFC6275"/>.</t>
+            </section>
+            <section title="Threats">
+              <t></t>
+            </section>
+            <section title="Operational and Interoperability Impact if Blocked">
+              <t></t>
+            </section>
+          </section>
+</section>
+
+
+<section title="SEcure Neighbor Discovery (SEND)">
+          <section anchor="Certification-Path-Solicitation-Message"
+                   title="Certification Path Solicitation Message (Type 148)">
+            <section title="Uses">
+              <t></t>
+            </section>
+            <section title="Message Specification">
+              <t>Defined in <xref target="RFC3971"/>.</t>
+            </section>
+            <section title="Threats">
+              <t></t>
+            </section>
+            <section title="Operational and Interoperability Impact if Blocked">
+              <t></t>
+            </section>
+          </section>
+
+
+          <section anchor="Certification-Path-Advertisement-Message"
+                   title="Certification Path Advertisement Message (Type 149)">
+            <section title="Uses">
+              <t></t>
+            </section>
+            <section title="Message Specification">
+              <t>Defined in <xref target="RFC3971"/>.</t>
+            </section>
+            <section title="Threats">
+              <t></t>
+            </section>
+            <section title="Operational and Interoperability Impact if Blocked">
+              <t></t>
+            </section>
+          </section>
+</section>
+
+
+          <section anchor="ICMP-messages-utilized-by-experimental-mobility-protocols-such-as-Seamoby"
+                   title="ICMP messages utilized by experimental mobility protocols such as Seamoby (Type 150)">
+            <section title="Uses">
+              <t></t>
+            </section>
+            <section title="Message Specification">
+              <t>Defined in <xref target="RFC4065"/>.</t>
+            </section>
+            <section title="Threats">
+              <t></t>
+            </section>
+            <section title="Operational and Interoperability Impact if Blocked">
+              <t></t>
+            </section>
+          </section>
+
+
+<section title="Multicast Router Discovery">
+          <section anchor="Multicast-Router-Advertisement"
+                   title="Multicast Router Advertisement (Type 151)">
+            <section title="Uses">
+              <t></t>
+            </section>
+            <section title="Message Specification">
+              <t>Defined in <xref target="RFC4286"/>.</t>
+            </section>
+            <section title="Threats">
+              <t></t>
+            </section>
+            <section title="Operational and Interoperability Impact if Blocked">
+              <t></t>
+            </section>
+          </section>
+
+
+          <section anchor="Multicast-Router-Solicitation"
+                   title="Multicast Router Solicitation (Type 152)">
+            <section title="Uses">
+              <t></t>
+            </section>
+            <section title="Message Specification">
+              <t>Defined in <xref target="RFC4286"/>.</t>
+            </section>
+            <section title="Threats">
+              <t></t>
+            </section>
+            <section title="Operational and Interoperability Impact if Blocked">
+              <t></t>
+            </section>
+          </section>
+
+
+          <section anchor="Multicast-Router-Termination"
+                   title="Multicast Router Termination (Type 153)">
+            <section title="Uses">
+              <t></t>
+            </section>
+            <section title="Message Specification">
+              <t>Defined in <xref target="RFC4286"/>.</t>
+            </section>
+            <section title="Threats">
+              <t></t>
+            </section>
+            <section title="Operational and Interoperability Impact if Blocked">
+              <t></t>
+            </section>
+          </section>
+</section>
+
+
+          <section anchor="FMIPv6-Messages"
+                   title="FMIPv6 Messages (Type 154)">
+            <section title="Uses">
+              <t></t>
+            </section>
+            <section title="Message Specification">
+              <t>Defined in <xref target="RFC5568"/>.</t>
+            </section>
+            <section title="Threats">
+              <t></t>
+            </section>
+            <section title="Operational and Interoperability Impact if Blocked">
+              <t></t>
+            </section>
+          </section>
+
+
+          <section anchor="RPL-Control-Message"
+                   title="RPL Control Message (Type 155)">
+            <section title="Uses">
+              <t></t>
+            </section>
+            <section title="Message Specification">
+              <t>Defined in <xref target="RFC6550"/>.</t>
+            </section>
+            <section title="Threats">
+              <t></t>
+            </section>
+            <section title="Operational and Interoperability Impact if Blocked">
+              <t></t>
+            </section>
+          </section>
+
+
+        <section anchor="ICMPv6-info-private-exp-200"
+                 title="Private experimentation (Type 200)">
+          <section title="Uses">
+            <t>Used for performing controlled experiments with ICMPv6 messages
+            before a specific ICMPv6 type is formally assigned by IANA.</t>
+          </section>
+
+          <section title="Message Specification">
+            <t>Defined in <xref target="RFC4443"/>.</t>
+          </section>
+
+          <section title="Threats">
+            <t>The security implications of this message type will depend on
+            the specific experiment the message is being used for and whether
+            the node this message is destined to implements the aforementioned
+            "experiment".</t>
+          </section>
+
+          <section title="Operational and Interoperability Impact if Blocked">
+            <t>None (this message type is meant for controlled experimentation
+            rather than "production").</t>
+          </section>
+        </section>
+
+        <section anchor="ICMPv6-info-private-exp-201"
+                 title="Private experimentation (Type 201)">
+          <section title="Uses">
+            <t>Used for performing controlled experiments with ICMPv6 messages
+            before a specific ICMPv6 type is formally assigned by IANA.</t>
+          </section>
+
+          <section title="Message Specification">
+            <t>Defined in <xref target="RFC4443"/>.</t>
+          </section>
+
+          <section title="Threats">
+            <t>The security implications of this message type will depend on
+            the specific experiment the message is being used for and whether
+            the node this message is destined to implements the aforementioned
+            "experiment".</t>
+          </section>
+
+          <section title="Operational and Interoperability Impact if Blocked">
+            <t>None (this message type is meant for controlled experimentation
+            rather than "production").</t>
+          </section>
+        </section>
+
+        <section anchor="ICMPv6-info-expansion"
+                 title="Reserved for expansion of ICMPv6 informational messages (Type 255)">
+          <section title="Uses">
+            <t>Type value 255 is reserved for future expansion of the type
+            value range if there is a shortage in the future.</t>
+          </section>
+
+          <section title="Message Specification">
+            <t>Defined in <xref target="RFC4443"/>.</t>
+          </section>
+
+          <section title="Threats">
+            <t>None.</t>
+          </section>
+
+          <section title="Operational and Interoperability Impact if Blocked">
+            <t>It would prevent expansion of the type value range, and hence
+            prevent extension of the ICMPv6 protocol.</t>
+          </section>
+        </section>
+      </section>
+    </section>
+
+    <section anchor="IANA" title="IANA Considerations">
+      <t>This document has no IANA actions.</t>
+    </section>
+
+    <section anchor="securityconsiderations" title="Security Considerations">
+      <t>This document does not introduce any new security implications. It
+      attempts to help mitigate security threats that rely on ICMP or ICMPv6
+      messages, through packet filtering and rate-limiting.</t>
+    </section>
+
+    <section anchor="acknowledgements" title="Acknowledgements">
+      <t>The authors would like to thank (in alphabetical order) Steinthor
+      Bjarnason, Alfred Hoenes, and Panos Kampanakis, for their valuable
+      feedback on earlier versions of this document.</t>
+
+      <t>The survey of ICMP specifications is based on a yet-to-be-published
+      internet-draft on ICMP by Fernando Gont and Carlos Pignataro. This
+      document borrows its structure from the "ICMP filtering" wiki started by
+      George Jones.</t>
+    </section>
+  </middle>
+
+  <back>
+    <references title="Normative References">
+      <?rfc include="reference.RFC.0792" ?>
+
+      <?rfc include="reference.RFC.1122" ?>
+
+      <?rfc include="reference.RFC.1191" ?>
+
+      <?rfc include="reference.RFC.1256" ?>
+
+      <?rfc include="reference.RFC.1812" ?>
+
+      <?rfc include="reference.RFC.1981" ?>
+
+      <?rfc include="reference.RFC.2119" ?>
+
+<!--
+      <?rfc include="reference.RFC.5681" ?>
+-->
+
+      <?rfc include="reference.RFC.4443" ?>
+
+      <?rfc include="reference.RFC.4301" ?>
+      <?rfc include="reference.RFC.2710" ?>
+      <?rfc include="reference.RFC.4861" ?>
+      <?rfc include="reference.RFC.4620" ?>
+      <?rfc include="reference.RFC.3122" ?>
+      <?rfc include="reference.RFC.3810" ?>
+      <?rfc include="reference.RFC.6275" ?>
+      <?rfc include="reference.RFC.3971" ?>
+      <?rfc include="reference.RFC.4065" ?>
+      <?rfc include="reference.RFC.4286" ?>
+      <?rfc include="reference.RFC.5568" ?>
+      <?rfc include="reference.RFC.6550" ?>
+
+      <!--
+                        <?rfc include="reference.RFC.4861" ?>
+                        <?rfc include="reference.RFC.4862" ?>
+-->
+    </references>
+
+    <references title="Informative References">
+      <?rfc include="reference.I-D.ietf-tsvwg-source-quench" ?>
+
+      <?rfc include="reference.RFC.5927" ?>
+
+      <?rfc include="reference.RFC.5461" ?>
+
+      <reference anchor="smurf">
+        <front>
+          <title>CERT Advisory CA-1998-01: Smurf IP Denial-of-Service
+          Attacks</title>
+
+          <author fullname="CERT" initials="" surname="CERT">
+            <organization/>
+          </author>
+
+          <date year="1998"/>
+        </front>
+
+        <seriesInfo name=""
+                    value="http://www.cert.org/advisories/CA-1998-01.html"/>
+      </reference>
+
+      <reference anchor="icmp-scanning">
+        <front>
+          <title>ICMP Usage in Scanning: The Complete Know-How</title>
+
+          <author fullname="Ofir Arkin" initials="0. A." surname="Arkin">
+            <organization/>
+          </author>
+
+          <date year="2001"/>
+        </front>
+
+        <seriesInfo name=""
+                    value="http://www.sys-security.com/archive/papers/ICMP_Scanning_v3.0.pdf"/>
+      </reference>
+    </references>
+  </back>
+</rfc>
